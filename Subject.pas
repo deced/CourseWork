@@ -1,4 +1,4 @@
-unit TSubjectClass;
+unit Subject;
 
 interface
 

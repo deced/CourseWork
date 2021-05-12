@@ -1,4 +1,4 @@
-unit TJsonFactoryClass;
+unit JsonFactory;
 
 interface
 
@@ -21,11 +21,17 @@ type
         class function DayStringToIndex(WeekDay: String): Integer;
         class function GetSubject(SubjectJSON: TJSONObject): TSubject;
         class function GetWeekNums(WeeksJSON: TJSONArray): TWeekNums;
-        // class function GetAuditory(JSON: String): TAuditory;
+        class function GetWeek(JSON: String): TWeek;
+        class function GetAuditory(JSON: String): TAuditory;
         // class function GetDay(JSON: String);
     end;
 
 implementation
+
+class function TJsonFactory.GetAuditory(JSON: String): TAuditory;
+begin
+
+end;
 
 class function TJsonFactory.GetWeekNums(WeeksJSON: TJSONArray): TWeekNums;
 var
@@ -99,64 +105,42 @@ begin
         Result := 5;
 end;
 
-class function TJsonFactory.GetTutorSchedule(JSON: string): TSchedule;
+class function TJsonFactory.GetWeek(JSON: String): TWeek;
 var
-    Week: TWeek;
-    JSONDaysArray, JSONSubjectsArray, WeekNumbers: TJSONArray;
+    I, J, WeekIndex: Integer;
+    JSONDaysArray, JSONSubjectsArray: TJSONArray;
+    DayName: String;
     Subjects: TSubjects;
-    I, J, K: Integer;
-    TutorJSON: TJSONValue;
-    Sub: TSubject;
-    DayOfWeek: String;
-    WeekIndex: Integer;
+    Subject: TSubject;
 begin
+    for I := 0 to High(Result) do
+        Result[I] := nil;
     JSONDaysArray := TJSONObject.ParseJSONValue(JSON).FindValue('schedules')
       as TJSONArray;
-    for I := 0 to High(Week) do
-        Week[I] := nil;
     for I := 0 to JSONDaysArray.count - 1 do
     begin
-        DayOfWeek := JSONDaysArray.Items[I].FindValue('weekDay').Value;
-        WeekIndex := DayStringToIndex(DayOfWeek);
+        DayName := JSONDaysArray.Items[I].FindValue('weekDay').Value;
+        WeekIndex := DayStringToIndex(DayName);
         JSONSubjectsArray := JSONDaysArray.Items[I].FindValue('schedule')
           as TJSONArray;
         Subjects := TSubjects.Create();
         for J := 0 to JSONSubjectsArray.count - 1 do
         begin
-            Sub := GetSubject(JSONSubjectsArray.Items[J] as TJSONObject);
-            Subjects.Add(Sub);
+            Subject := GetSubject(JSONSubjectsArray.Items[J] as TJSONObject);
+            Subjects.Add(Subject);
         end;
-        Week[WeekIndex] := TDay.Create(Subjects);
+        Result[WeekIndex] := TDay.Create(Subjects);
     end;
-    Result := TSchedule.Create(Week, TScheduleType.TutorSchedule);
+end;
+
+class function TJsonFactory.GetTutorSchedule(JSON: string): TSchedule;
+begin
+    Result := TSchedule.Create(GetWeek(JSON), TScheduleType.TutorSchedule);
 end;
 
 class function TJsonFactory.GetGroupShedule(JSON: String): TSchedule;
-var
-    I, J, K: Integer;
-    Week: TWeek;
-    Sub: TSubject;
-    Tutor: TTutor;
-    JSONDaysArray, JSONSubjectsArray, WeekNumbers: TJSONArray;
-    TutorJSON: TJSONValue;
-    Subjects: TList<TSubject>;
-    Weeks: TWeekNums;
 begin
-    JSONDaysArray := TJSONObject.ParseJSONValue(JSON).FindValue('schedules')
-      as TJSONArray;
-    for I := 0 to JSONDaysArray.count - 1 do
-    begin
-        JSONSubjectsArray := JSONDaysArray.Items[I].FindValue('schedule')
-          as TJSONArray;
-        Subjects := TList<TSubject>.Create();
-        for J := 0 to JSONSubjectsArray.count - 1 do
-        begin
-            Sub := GetSubject(JSONSubjectsArray.Items[J] as TJSONObject);
-            Subjects.Add(Sub);
-        end;
-        Week[I] := TDay.Create(Subjects);
-    end;
-    Result := TSchedule.Create(Week, TScheduleType.GroupSchedule);
+    Result := TSchedule.Create(GetWeek(JSON), TScheduleType.GroupSchedule);
 end;
 
 class function TJsonFactory.GetTutors(JSON: String): TTutorsArray;
@@ -196,15 +180,5 @@ begin
           .Value, Course);
     end;
 end;
-
-{ class function TJsonFactory.GetGroupShedule(JSON: String);
-  begin
-
-  end;
-
-  class function TJsonFactory.GetDay(JSON: String);
-  begin
-
-  end; }
 
 end.

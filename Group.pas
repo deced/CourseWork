@@ -1,4 +1,4 @@
-unit TGroupClass;
+unit Group;
 
 interface
 

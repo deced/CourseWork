@@ -1,4 +1,4 @@
-unit TDayClass;
+unit Day;
 
 interface
 

@@ -1,4 +1,4 @@
-unit TParserClass;
+unit Parser;
 
 interface
 

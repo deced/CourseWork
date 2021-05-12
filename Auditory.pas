@@ -1,4 +1,4 @@
-unit TAuditoryClass;
+unit Auditory;
 
 interface
 

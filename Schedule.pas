@@ -1,4 +1,4 @@
-unit TScheduleClass;
+unit Schedule;
 
 interface
 
