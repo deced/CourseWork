@@ -2,7 +2,7 @@ unit Day;
 
 interface
 
-uses TSubjectClass, SysUtils, System.Generics.Collections;
+uses Subject, SysUtils, System.Generics.Collections;
 
 type
     TSubjects = TList<TSubject>;

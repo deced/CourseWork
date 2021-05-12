@@ -2,7 +2,7 @@ unit Schedule;
 
 interface
 
-uses TDayClass, System.Generics.Collections, TSubjectClass;
+uses Day, System.Generics.Collections, Subject;
 
 type
     TScheduleType = (TutorSchedule, GroupSchedule);
@@ -11,7 +11,9 @@ type
     TSchedule = class
         Week: TWeek;
         ScheduleType: TScheduleType;
-        constructor Create(Week: TWeek; ScheduleType: TScheduleType);
+        Info: String;
+        constructor Create(Week: TWeek; ScheduleType: TScheduleType;
+          Info: String);
         function GetWeek(WeekIndex: Byte): TWeek;
     end;
 
@@ -21,7 +23,7 @@ function ContainsInArray(Week: TWeekNums; WeekNum: Byte): Boolean;
 var
     I: Integer;
 begin
-    Result := Week[WeekNum ];
+    Result := Week[WeekNum];
 end;
 
 function TSchedule.GetWeek(WeekIndex: Byte): TWeek;
@@ -47,10 +49,12 @@ begin
     end;
 end;
 
-constructor TSchedule.Create(Week: TWeek; ScheduleType: TScheduleType);
+constructor TSchedule.Create(Week: TWeek; ScheduleType: TScheduleType;
+  Info: String);
 begin
     self.Week := Week;
     self.ScheduleType := ScheduleType;
+    self.Info := Info;
 end;
 
 end.

@@ -1,18 +1,18 @@
 program ÑourseWork;
 
 uses
-    Vcl.Forms,
-    MainForm in 'MainForm.pas'
-
-{$R *.res},
-    TGroupClass in 'TGroupClass.pas',
-    TParserClass in 'TParserClass.pas',
-    TSubjectClass in 'TSubjectClass.pas',
-    TScheduleClass in 'TScheduleClass.pas',
-    TDayClass in 'TDayClass.pas',
-    TAuditoryClass in 'TAuditoryClass.pas',
-    TJsonFactoryClass in 'TJsonFactoryClass.pas',
-    CustomTypes in 'CustomTypes.pas';
+  Vcl.Forms,
+  {$R}
+  MainForm in 'MainForm.pas' {$R *.res},
+  Group in 'Group.pas',
+  Parser in 'Parser.pas',
+  Subject in 'Subject.pas',
+  Schedule in 'Schedule.pas',
+  Day in 'Day.pas',
+  JsonFactory in 'JsonFactory.pas',
+  Tutor in 'Tutor.pas',
+  CustomTypes in 'CustomTypes.pas',
+  ScheduleList in 'ScheduleList.pas';
 
 {$R *.res}
 
@@ -20,6 +20,6 @@ begin
     Application.Initialize;
     Application.MainFormOnTaskbar := True;
     Application.CreateForm(TForm4, Form4);
-    Application.Run;
+  Application.Run;
 
 end.

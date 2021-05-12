@@ -2,8 +2,8 @@ unit Parser;
 
 interface
 
-uses TGroupClass, TTutorClass, System.Classes, System.Net.HttpClient,
-    Vcl.StdCtrls, SysUtils, CustomTypes, TJsonFactoryClass;
+uses Group, Tutor, System.Classes, System.Net.HttpClient,
+    Vcl.StdCtrls, SysUtils, CustomTypes, JsonFactory;
 
 type
     MyTParser = class(TThread)
@@ -42,10 +42,12 @@ begin
     HttpClient := THttpClient.Create;
     HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
     OnWeekReady(StrToInt(HttpResponse.ContentAsString()));
-   HttpResponse :=  HttpClient.Get('https://journal.bsuir.by/api/v1/groups');
+    HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/groups');
     OnGroupsReady(TJsonFactory.GetGroups(HttpResponse.ContentAsString()));
     HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/employees');
     OnTutorsReady(TJsonFactory.GetTutors(HttpResponse.ContentAsString()));
+
+    HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/auditory');
     while (true) do
     begin
         Self.Suspend;

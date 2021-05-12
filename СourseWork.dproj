@@ -94,14 +94,15 @@
             <Form>$R *.res</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="TGroupClass.pas"/>
-        <DCCReference Include="TParserClass.pas"/>
-        <DCCReference Include="TSubjectClass.pas"/>
-        <DCCReference Include="TScheduleClass.pas"/>
-        <DCCReference Include="TDayClass.pas"/>
-        <DCCReference Include="TAuditoryClass.pas"/>
-        <DCCReference Include="TJsonFactoryClass.pas"/>
+        <DCCReference Include="Group.pas"/>
+        <DCCReference Include="Parser.pas"/>
+        <DCCReference Include="Subject.pas"/>
+        <DCCReference Include="Schedule.pas"/>
+        <DCCReference Include="Day.pas"/>
+        <DCCReference Include="JsonFactory.pas"/>
+        <DCCReference Include="Tutor.pas"/>
         <DCCReference Include="CustomTypes.pas"/>
+        <DCCReference Include="ScheduleList.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

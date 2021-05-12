@@ -2,7 +2,7 @@ unit CustomTypes;
 
 interface
 
-uses TGroupClass, TTutorClass, TDayClass, TScheduleClass;
+uses Group, Tutor, Day, Schedule;
 
 type
     TGroupsArray = Array of TGroup;
@@ -11,8 +11,7 @@ type
     TTutorsParsedEvent = procedure(Result: TTutorsArray);
     TGroupSheduleParsedEvent = procedure(Result: TSchedule);
     TTutorScheduleParsedEvent = procedure(Result: TSchedule);
-    TWeekParsed = procedure(Result : Byte);
-    // TWeek = array [0 .. 6] of TDay;
+    TWeekParsed = procedure(Result: Byte);
 
 implementation
 

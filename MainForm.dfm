@@ -245,12 +245,22 @@ object Form4: TForm4
     Width = 482
     Height = 288
     TabOrder = 13
-    object Image9: TImage
-      Left = 256
-      Top = 48
-      Width = 65
-      Height = 161
-    end
+  end
+  object CBReady: TComboBox
+    Left = 400
+    Top = 352
+    Width = 145
+    Height = 21
+    TabOrder = 14
+  end
+  object Button4: TButton
+    Left = 400
+    Top = 379
+    Width = 75
+    Height = 25
+    Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+    TabOrder = 15
+    OnClick = Button4Click
   end
   object IdHTTP1: TIdHTTP
     AllowCookies = True

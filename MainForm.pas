@@ -7,8 +7,8 @@ uses
     System.Classes, Vcl.Graphics,
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, IdHTTP, Vcl.StdCtrls, IdBaseComponent,
     IdComponent, IdTCPConnection, System.Net.HttpClient,
-    TParserClass, TjsonfactoryClass, CustomTypes, Vcl.ExtCtrls, PngImage,
-    Tscheduleclass, Vcl.Imaging.jpeg, IdTCPClient;
+    Parser, JsonFactory, CustomTypes, Vcl.ExtCtrls, PngImage,
+    Schedule, Vcl.Imaging.jpeg, IdTCPClient, ScheduleList;
 
 type
     TForm4 = class(TForm)
@@ -44,12 +44,13 @@ type
         ScrollBox: TScrollBox;
         Image8: TImage;
         IdHTTP1: TIdHTTP;
-        Image9: TImage;
+        CBReady: TComboBox;
+        Button4: TButton;
         procedure Button1Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure Button2Click(Sender: TObject);
-        procedure FillTutuors();
         procedure Button3Click(Sender: TObject);
+        procedure Button4Click(Sender: TObject);
     private
         { Private declarations }
     public
@@ -61,13 +62,13 @@ var
     Tutors: TTutorsArray;
     Parser: MyTparser;
     CurrentWeek: Byte;
-    Panels: array of TPanel;
+    Schedules: TScheduleList;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm4.FillTutuors();
+procedure FillTutuors();
 var
     I: Integer;
     NewImage: TImage;
@@ -76,37 +77,38 @@ var
     jpg: TJPEGImage;
     fs: TFileStream;
 begin
-    SetLength(Panels, 25);
-    for I := 0 to 20 do
-    begin
-        NewPannel := TPanel.Create(Self);
-        NewPannel.parent := Self.ScrollBox;
-        NewPannel.Left := 20;
-        NewPannel.Width := 300;
-        NewPannel.Height := 80;
-        NewPannel.top := I * 100;
-        NewLabel := TLabel.Create(Self);
-        NewLabel.Caption := Tutors[I].Fio;
-        NewLabel.parent := NewPannel;
-        NewImage := TImage.Create(Self);
-        NewImage.top := 0;
-        NewImage.Left := 0;
-        NewImage.parent := NewPannel;
+    { SetLength(Panels, 25);
+      for I := 0 to 20 do
+      begin
+      NewPannel := TPanel.Create(Form4);
+      NewPannel.parent := Form4.ScrollBox;
+      NewPannel.Left := 20;
+      NewPannel.Width := 300;
+      NewPannel.Height := 80;
+      NewPannel.top := I * 100;
+      NewLabel := TLabel.Create(Form4);
+      NewLabel.Caption := Tutors[I].Fio;
+      NewLabel.parent := NewPannel;
+      NewLabel.top := 20 * I;
+      NewImage := TImage.Create(Form4);
+      NewImage.top := 0;
+      NewImage.Left := 0;
+      NewImage.parent := NewPannel;
 
-     {   try
-            ShowMessage('');
-            fs := TFileStream.Create(IntToStr(I) + '.png', fmCreate);
-            IdHTTP1.Get(Tutors[I].PhotoLink, fs);
-            NewImage.Picture.LoadFromFile(IntToStr(I) + '.png');
+      { try
+      ShowMessage('');
+      fs := TFileStream.Create(IntToStr(I) + '.png', fmCreate);
+      IdHTTP1.Get(Tutors[I].PhotoLink, fs);
+      NewImage.Picture.LoadFromFile(IntToStr(I) + '.png');
 
-        finally
-             fs.Free;
-        end;    }
-        NewImage.Height := 50;
-        NewImage.Width := 50;
+      finally
+      fs.Free;
+      end; }
+    { NewImage.Height := 50;
+      NewImage.Width := 50;
 
-        Panels[I] := NewPannel;
-    end;
+      Panels[I] := NewPannel;
+      end; }
 end;
 
 procedure DisplayGroups(Inp: TGroupsArray);
@@ -132,7 +134,7 @@ begin
         Form4.CBTutors.Items.Add(Inp[I].Fio);
 
     end;
-    Form4.FillTutuors();
+    // FillTutuors();
 end;
 
 procedure TForm4.Button1Click(Sender: TObject);
@@ -150,6 +152,8 @@ end;
 
 procedure A(sch: Tschedule);
 begin
+    Schedules.Schedules.Add(sch);
+    Form4.CBReady.Items.Add(sch.Info);
     Form4.LabelSchedule1.Caption := sch.GetWeek(CurrentWeek)[0].ToString;
     Form4.LabelSchedule2.Caption := sch.GetWeek(CurrentWeek)[1].ToString;
     Form4.LabelSchedule3.Caption := sch.GetWeek(CurrentWeek)[2].ToString;
@@ -185,10 +189,20 @@ begin
     Self.Image8.Picture.LoadFromFile('1.png');
 end;
 
+procedure TForm4.Button4Click(Sender: TObject);
+var
+    sch: Tschedule;
+begin
+    A(Schedules.Schedules[CBReady.Items.IndexOf(CBReady.Text)]);
+
+end;
+
 procedure B(Inp: Tschedule);
 var
     sch: TWeek;
 begin
+    Schedules.Schedules.Add(Inp);
+    Form4.CBReady.Items.Add(Inp.Info);
     sch := Inp.GetWeek(CurrentWeek);
     Form4.LabelSchedule1.Caption := sch[0].ToString;
     Form4.LabelSchedule2.Caption := sch[1].ToString;
@@ -211,6 +225,7 @@ var
     NewLabel: TLabel;
     NewPannel: TPanel;
 begin
+    Schedules := TScheduleList.Create;
     { NewLabel := TLabel.Create(Self);
       NewLabel.Caption := 'ffffffffffffffffffffffff';
       NewLabel.Top := 0;
@@ -221,6 +236,7 @@ begin
     Parser.OnTutorsReady := DisplayTutors;
     Parser.OnGroupScheduleReady := A;
     Parser.OnTutorScheduleReady := B;
+
     Parser.OnWeekReady := WeekReady;
     Parser.Start();
 end;

@@ -1,4 +1,4 @@
-unit TTutorClass;
+unit Tutor;
 
 interface
 

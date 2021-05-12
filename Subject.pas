@@ -2,7 +2,7 @@ unit Subject;
 
 interface
 
-uses TTutorClass, TAuditoryClass;
+uses Tutor;
 
 type
     TWeekNums = Array [0 .. 4] of Boolean;
