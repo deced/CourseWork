@@ -6,8 +6,12 @@ uses SysUtils;
 
 type
     TGroup = class
-        Id: String;
-        Cource: Byte;
+    private
+        FId: String;
+        FCource: Byte;
+    public
+        property Id: String read FId write FId;
+        property Cource: Byte read FCource write FCource;
         function ToString(): string;
         constructor Create(GroupId: String; Course: Byte);
     end;

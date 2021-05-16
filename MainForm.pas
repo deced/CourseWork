@@ -1,4 +1,4 @@
-unit MainForm;
+п»їunit MainForm;
 
 interface
 
@@ -8,7 +8,8 @@ uses
     Vcl.Controls, Vcl.Forms, Vcl.Dialogs, IdHTTP, Vcl.StdCtrls, IdBaseComponent,
     IdComponent, IdTCPConnection, System.Net.HttpClient,
     Parser, JsonFactory, CustomTypes, Vcl.ExtCtrls, PngImage,
-    Schedule, Vcl.Imaging.jpeg, IdTCPClient, ScheduleList;
+    Schedule, Vcl.Imaging.jpeg, IdTCPClient, Generics.Collections, Day,
+    Rest.Json;
 
 type
     TForm4 = class(TForm)
@@ -46,6 +47,7 @@ type
         IdHTTP1: TIdHTTP;
         CBReady: TComboBox;
         Button4: TButton;
+        DaySchedule: TScrollBox;
         procedure Button1Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure Button2Click(Sender: TObject);
@@ -62,7 +64,7 @@ var
     Tutors: TTutorsArray;
     Parser: MyTparser;
     CurrentWeek: Byte;
-    Schedules: TScheduleList;
+    Schedules: TList<TSchedule>;
 
 implementation
 
@@ -145,15 +147,54 @@ begin
     end
     else
     begin
-        ShowMessage('Такой группы не существует');
+        ShowMessage('РўР°РєРѕР№ РіСЂСѓРїРїС‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚');
         // Parser.Resume;
     end;
 end;
 
-procedure A(sch: Tschedule);
+procedure PrintDay(Day: TDay);
+var
+    I: Integer;
+    FIOLabel, TutorLabel: TLabel;
+    Image: TImage;
 begin
-    Schedules.Schedules.Add(sch);
-    Form4.CBReady.Items.Add(sch.Info);
+    { // Form4.DaySchedule := TScrollBox.Create(Form4);
+      for I := 0 to Day.Subjects.Count - 1 do
+      begin
+      FIOLabel := TLabel.Create(Form4);
+      TutorLabel := TLabel.Create(Form4);
+      FIOLabel.Top := 20 * I;
+      TutorLabel.Top := FIOLabel.Top + 10;
+      TutorLabel.Left := FIOLabel.Width - TutorLabel.Width;
+      // FIOLabel.Font.Size := 12;
+      TutorLabel.Parent := Form4.DaySchedule;
+      FIOLabel.Parent := Form4.DaySchedule;
+      FIOLabel.Caption := Day.Subjects[I].SubjectName + ' ' + Day.Subjects
+      [I].Auditory;
+      TutorLabel.Caption := Day.Subjects[I].Tutor.Fio;
+      end; }
+end;
+
+procedure SaveShedulesToFile(schs: TList<TSchedule>);
+var
+    OutputFile: TextFile;
+    I: Integer;
+    Schedule: TSchedule;
+begin
+    AssignFile(OutputFile, 'schediles.dat');
+    Rewrite(OutputFile);
+    write(OutputFile, TJson.ObjectToJsonString(Schedules));
+    CloseFile(OutputFile);
+end;
+
+procedure PrintSchedule(sch: TSchedule);
+begin
+    if Form4.CBReady.Items.IndexOf(sch.Info) = -1 then
+    begin
+        Form4.CBReady.Items.Add(sch.Info);
+        Schedules.Add(sch);
+    end;
+    PrintDay(sch.GetWeek(CurrentWeek)[0]);
     Form4.LabelSchedule1.Caption := sch.GetWeek(CurrentWeek)[0].ToString;
     Form4.LabelSchedule2.Caption := sch.GetWeek(CurrentWeek)[1].ToString;
     Form4.LabelSchedule3.Caption := sch.GetWeek(CurrentWeek)[2].ToString;
@@ -161,6 +202,7 @@ begin
     Form4.LabelSchedule5.Caption := sch.GetWeek(CurrentWeek)[4].ToString;
     Form4.LabelSchedule6.Caption := sch.GetWeek(CurrentWeek)[5].ToString;
     // Form4.TestLabel.Caption := sch.GetDayShedule(2).ToString;
+    SaveShedulesToFile(Schedules);
 end;
 
 procedure TForm4.Button2Click(Sender: TObject);
@@ -174,8 +216,7 @@ begin
     end
     else
     begin
-        ShowMessage('Такой группы не существует');
-        // Parser.Resume;
+        ShowMessage('РўР°РєРѕР№ РіСЂСѓРїРїС‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚');
     end;
 end;
 
@@ -191,31 +232,52 @@ end;
 
 procedure TForm4.Button4Click(Sender: TObject);
 var
-    sch: Tschedule;
+    sch: TSchedule;
 begin
-    A(Schedules.Schedules[CBReady.Items.IndexOf(CBReady.Text)]);
+    PrintSchedule(Schedules[CBReady.Items.IndexOf(CBReady.Text)]);
 
 end;
 
-procedure B(Inp: Tschedule);
+procedure B(Inp: TSchedule);
 var
     sch: TWeek;
 begin
-    Schedules.Schedules.Add(Inp);
-    Form4.CBReady.Items.Add(Inp.Info);
+    if Form4.CBReady.Items.IndexOf(Inp.Info) = -1 then
+    begin
+        Form4.CBReady.Items.Add(Inp.Info);
+        Schedules.Add(Inp);
+    end;
     sch := Inp.GetWeek(CurrentWeek);
+    PrintDay(Inp.GetWeek(CurrentWeek)[0]);
     Form4.LabelSchedule1.Caption := sch[0].ToString;
     Form4.LabelSchedule2.Caption := sch[1].ToString;
     Form4.LabelSchedule3.Caption := sch[2].ToString;
     Form4.LabelSchedule4.Caption := sch[3].ToString;
     Form4.LabelSchedule5.Caption := sch[4].ToString;
     Form4.LabelSchedule6.Caption := sch[5].ToString;
+    SaveShedulesToFile(Schedules);
 end;
 
 procedure WeekReady(Week: Byte);
 begin
     CurrentWeek := Week;
-    Form4.WeekNumberLabel.Caption := 'номер текущей недели: ' + IntToStr(Week);
+    Form4.WeekNumberLabel.Caption := 'РЅРѕРјРµСЂ С‚РµРєСѓС‰РµР№ РЅРµРґРµР»Рё: ' + IntToStr(Week);
+end;
+
+function LoadSchedulesFromFile(): TList<TSchedule>;
+var
+    InputFile: TextFile;
+    Json: String;
+begin
+    Result := TList<TSchedule>.Create;
+    if FileExists('schediles.dat') then
+    begin
+        AssignFile(InputFile, 'schediles.dat');
+        Reset(InputFile);
+        Read(InputFile, Json);
+        Result := TJson.JsonToObject < TList < TSchedule >> (Json);
+        CloseFile(InputFile);
+    end;
 end;
 
 procedure TForm4.FormCreate(Sender: TObject);
@@ -225,16 +287,13 @@ var
     NewLabel: TLabel;
     NewPannel: TPanel;
 begin
-    Schedules := TScheduleList.Create;
-    { NewLabel := TLabel.Create(Self);
-      NewLabel.Caption := 'ffffffffffffffffffffffff';
-      NewLabel.Top := 0;
-      NewLabel.Left := 0;
-      NewLabel.parent := Form4.PanelTutor1; }
+    Schedules := LoadSchedulesFromFile();
+    for I := 0 to Schedules.Count - 1 do
+        Form4.CBReady.Items.Add(Schedules[I].Info);
     Parser := MyTparser.Create(true);
     Parser.OnGroupsReady := DisplayGroups;
     Parser.OnTutorsReady := DisplayTutors;
-    Parser.OnGroupScheduleReady := A;
+    Parser.OnGroupScheduleReady := PrintSchedule;
     Parser.OnTutorScheduleReady := B;
 
     Parser.OnWeekReady := WeekReady;

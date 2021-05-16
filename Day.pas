@@ -8,7 +8,10 @@ type
     TSubjects = TList<TSubject>;
 
     TDay = class
-        Subjects: TSubjects;
+    private
+        FSubjects: TSubjects;
+    public
+        property Subjects: TSubjects read FSubjects write FSubjects;
         function ToString(): String; override;
         constructor Create(Subjects: TSubjects);
     end;

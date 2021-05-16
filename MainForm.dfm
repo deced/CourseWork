@@ -3,7 +3,7 @@ object Form4: TForm4
   Top = 0
   Caption = 'Form4'
   ClientHeight = 640
-  ClientWidth = 1099
+  ClientWidth = 1507
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -98,8 +98,8 @@ object Form4: TForm4
     OnClick = Button1Click
   end
   object Memo1: TMemo
-    Left = 456
-    Top = 471
+    Left = 401
+    Top = 494
     Width = 185
     Height = 113
     Lines.Strings = (
@@ -108,8 +108,8 @@ object Form4: TForm4
     TabOrder = 1
   end
   object Memo2: TMemo
-    Left = 241
-    Top = 444
+    Left = 201
+    Top = 494
     Width = 185
     Height = 113
     Lines.Strings = (
@@ -261,6 +261,13 @@ object Form4: TForm4
     Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
     TabOrder = 15
     OnClick = Button4Click
+  end
+  object DaySchedule: TScrollBox
+    Left = 1120
+    Top = 200
+    Width = 313
+    Height = 313
+    TabOrder = 16
   end
   object IdHTTP1: TIdHTTP
     AllowCookies = True

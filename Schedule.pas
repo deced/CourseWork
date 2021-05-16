@@ -9,9 +9,15 @@ type
     TWeek = array [0 .. 5] of TDay;
 
     TSchedule = class
-        Week: TWeek;
-        ScheduleType: TScheduleType;
-        Info: String;
+    private
+        FWeek: TWeek;
+        FScheduleType: TScheduleType;
+        FInfo: String;
+    public
+        property Week: TWeek read FWeek write FWeek;
+        property ScheduleType: TScheduleType read FScheduleType
+          write FScheduleType;
+        property Info: String read FInfo write FInfo;
         constructor Create(Week: TWeek; ScheduleType: TScheduleType;
           Info: String);
         function GetWeek(WeekIndex: Byte): TWeek;

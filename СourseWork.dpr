@@ -2,7 +2,6 @@ program ÑourseWork;
 
 uses
   Vcl.Forms,
-  {$R}
   MainForm in 'MainForm.pas' {$R *.res},
   Group in 'Group.pas',
   Parser in 'Parser.pas',
@@ -11,8 +10,7 @@ uses
   Day in 'Day.pas',
   JsonFactory in 'JsonFactory.pas',
   Tutor in 'Tutor.pas',
-  CustomTypes in 'CustomTypes.pas',
-  ScheduleList in 'ScheduleList.pas';
+  CustomTypes in 'CustomTypes.pas';
 
 {$R *.res}
 
