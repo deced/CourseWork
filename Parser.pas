@@ -50,7 +50,6 @@ begin
     HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/auditory');
     while (true) do
     begin
-        Self.Suspend;
         if GroupID <> '' then
         begin
             HttpResponse :=
@@ -71,6 +70,7 @@ begin
               (TJsonFactory.GetTutorSchedule(HttpResponse.ContentAsString()));
             TutorId := '';
         end;
+        Self.Suspend;
     end;
 
 end;

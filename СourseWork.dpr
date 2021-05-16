@@ -2,7 +2,7 @@ program ÑourseWork;
 
 uses
   Vcl.Forms,
-  MainForm in 'MainForm.pas' {$R *.res},
+  Main in 'Main.pas' {MainForm},
   Group in 'Group.pas',
   Parser in 'Parser.pas',
   Subject in 'Subject.pas',
@@ -10,14 +10,15 @@ uses
   Day in 'Day.pas',
   JsonFactory in 'JsonFactory.pas',
   Tutor in 'Tutor.pas',
-  CustomTypes in 'CustomTypes.pas';
+  CustomTypes in 'CustomTypes.pas',
+  IO in 'IO.pas';
 
 {$R *.res}
 
 begin
     Application.Initialize;
     Application.MainFormOnTaskbar := True;
-    Application.CreateForm(TForm4, Form4);
+    Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 
 end.

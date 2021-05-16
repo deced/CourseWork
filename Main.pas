@@ -1,4 +1,4 @@
-Ôªøunit MainForm;
+unit Main;
 
 interface
 
@@ -9,19 +9,17 @@ uses
     IdComponent, IdTCPConnection, System.Net.HttpClient,
     Parser, JsonFactory, CustomTypes, Vcl.ExtCtrls, PngImage,
     Schedule, Vcl.Imaging.jpeg, IdTCPClient, Generics.Collections, Day,
-    Rest.Json;
+    Rest.Json, IO;
 
 type
-    TForm4 = class(TForm)
-        Button1: TButton;
+    TMainForm = class(TForm)
         Memo1: TMemo;
         Memo2: TMemo;
-        CBGroups: TComboBox;
         Button2: TButton;
         Image1: TImage;
         Button3: TButton;
         Label1: TLabel;
-        CBTutors: TComboBox;
+        SearchList: TComboBox;
         GroupMonday: TGroupBox;
         LabelSchedule1: TLabel;
         GroupTuesday: TGroupBox;
@@ -45,10 +43,9 @@ type
         ScrollBox: TScrollBox;
         Image8: TImage;
         IdHTTP1: TIdHTTP;
-        CBReady: TComboBox;
+        SchedulesList: TComboBox;
         Button4: TButton;
         DaySchedule: TScrollBox;
-        procedure Button1Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure Button2Click(Sender: TObject);
         procedure Button3Click(Sender: TObject);
@@ -60,10 +57,11 @@ type
     end;
 
 var
-    Form4: TForm4;
+    MainForm: TMainForm;
     Tutors: TTutorsArray;
     Parser: MyTparser;
     CurrentWeek: Byte;
+    GroupsIndex: Integer;
     Schedules: TList<TSchedule>;
 
 implementation
@@ -119,9 +117,10 @@ var
 begin
     for I := 0 to High(Inp) do
     begin
-        Form4.Memo1.Lines.Add(Inp[I].ToString);
-        Form4.CBGroups.Items.Add(Inp[I].Id)
+        MainForm.Memo1.Lines.Add(Inp[I].ToString);
+        MainForm.SearchList.Items.Add(Inp[I].Id)
     end;
+    SaveGroups(MainForm.SearchList.Items);
 end;
 
 procedure DisplayTutors(Inp: TTutorsArray);
@@ -132,25 +131,14 @@ begin
     Tutors := Inp;
     for I := 0 to High(Inp) do
     begin
-        Form4.Memo2.Lines.Add(Inp[I].ToString);
-        Form4.CBTutors.Items.Add(Inp[I].Fio);
+        MainForm.Memo2.Lines.Add(Inp[I].ToString);
+        MainForm.SearchList.Items.Add(Inp[I].Fio);
 
     end;
+    SaveTutors(MainForm.SearchList.Items);
     // FillTutuors();
 end;
 
-procedure TForm4.Button1Click(Sender: TObject);
-begin
-    if (CBGroups.Items.IndexOf(CBGroups.Text) <> -1) then
-    begin
-        Parser.GetGroupSchedule(CBGroups.Text);
-    end
-    else
-    begin
-        ShowMessage('–¢–∞–∫–æ–π –≥—Ä—É–ø–ø—ã –Ω–µ —Å—É—â–µ—Å—Ç–≤—É–µ—Ç');
-        // Parser.Resume;
-    end;
-end;
 
 procedure PrintDay(Day: TDay);
 var
@@ -175,52 +163,49 @@ begin
       end; }
 end;
 
-procedure SaveShedulesToFile(schs: TList<TSchedule>);
-var
-    OutputFile: TextFile;
-    I: Integer;
-    Schedule: TSchedule;
+procedure PrintSchedule(Schedule: TSchedule);
 begin
-    AssignFile(OutputFile, 'schediles.dat');
-    Rewrite(OutputFile);
-    write(OutputFile, TJson.ObjectToJsonString(Schedules));
-    CloseFile(OutputFile);
-end;
-
-procedure PrintSchedule(sch: TSchedule);
-begin
-    if Form4.CBReady.Items.IndexOf(sch.Info) = -1 then
+    if MainForm.SchedulesList.Items.IndexOf(Schedule.Info) = -1 then
     begin
-        Form4.CBReady.Items.Add(sch.Info);
-        Schedules.Add(sch);
+        MainForm.SchedulesList.Items.Add(Schedule.Info);
+        Schedules.Add(Schedule);
     end;
-    PrintDay(sch.GetWeek(CurrentWeek)[0]);
-    Form4.LabelSchedule1.Caption := sch.GetWeek(CurrentWeek)[0].ToString;
-    Form4.LabelSchedule2.Caption := sch.GetWeek(CurrentWeek)[1].ToString;
-    Form4.LabelSchedule3.Caption := sch.GetWeek(CurrentWeek)[2].ToString;
-    Form4.LabelSchedule4.Caption := sch.GetWeek(CurrentWeek)[3].ToString;
-    Form4.LabelSchedule5.Caption := sch.GetWeek(CurrentWeek)[4].ToString;
-    Form4.LabelSchedule6.Caption := sch.GetWeek(CurrentWeek)[5].ToString;
-    // Form4.TestLabel.Caption := sch.GetDayShedule(2).ToString;
-    SaveShedulesToFile(Schedules);
+    PrintDay(Schedule.GetWeek(CurrentWeek)[0]);
+    MainForm.LabelSchedule1.Caption := Schedule.GetWeek(CurrentWeek)
+      [0].ToString;
+    MainForm.LabelSchedule2.Caption := Schedule.GetWeek(CurrentWeek)
+      [1].ToString;
+    MainForm.LabelSchedule3.Caption := Schedule.GetWeek(CurrentWeek)
+      [2].ToString;
+    MainForm.LabelSchedule4.Caption := Schedule.GetWeek(CurrentWeek)
+      [3].ToString;
+    MainForm.LabelSchedule5.Caption := Schedule.GetWeek(CurrentWeek)
+      [4].ToString;
+    MainForm.LabelSchedule6.Caption := Schedule.GetWeek(CurrentWeek)
+      [5].ToString;
+    SaveShedules(Schedules);
 end;
 
-procedure TForm4.Button2Click(Sender: TObject);
+procedure TMainForm.Button2Click(Sender: TObject);
 var
     HttpClient: THttpClient;
     Png: TPngObject;
 begin
-    if (CBTutors.Items.IndexOf(CBTutors.Text) <> -1) then
+    if (SearchList.Items.IndexOf(SearchList.Text) <> -1) then
     begin
-        Parser.GetTutorSchedule(Tutors[CBTutors.ItemIndex].Id);
+        if SearchList.Items.IndexOf(SearchList.Text) < GroupsIndex then
+
+            Parser.GetTutorSchedule(Tutors[SearchList.ItemIndex].Id)
+        else
+            Parser.GetGroupSchedule(SearchList.Text);
     end
     else
     begin
-        ShowMessage('–¢–∞–∫–æ–π –≥—Ä—É–ø–ø—ã –Ω–µ —Å—É—â–µ—Å—Ç–≤—É–µ—Ç');
+        ShowMessage('“‡ÍÓÈ „ÛÔÔ˚ ÌÂ ÒÛ˘ÂÒÚ‚ÛÂÚ');
     end;
 end;
 
-procedure TForm4.Button3Click(Sender: TObject);
+procedure TMainForm.Button3Click(Sender: TObject);
 var
     fs: TFileStream;
 begin
@@ -230,71 +215,45 @@ begin
     Self.Image8.Picture.LoadFromFile('1.png');
 end;
 
-procedure TForm4.Button4Click(Sender: TObject);
+procedure TMainForm.Button4Click(Sender: TObject);
 var
     sch: TSchedule;
 begin
-    PrintSchedule(Schedules[CBReady.Items.IndexOf(CBReady.Text)]);
-
-end;
-
-procedure B(Inp: TSchedule);
-var
-    sch: TWeek;
-begin
-    if Form4.CBReady.Items.IndexOf(Inp.Info) = -1 then
-    begin
-        Form4.CBReady.Items.Add(Inp.Info);
-        Schedules.Add(Inp);
-    end;
-    sch := Inp.GetWeek(CurrentWeek);
-    PrintDay(Inp.GetWeek(CurrentWeek)[0]);
-    Form4.LabelSchedule1.Caption := sch[0].ToString;
-    Form4.LabelSchedule2.Caption := sch[1].ToString;
-    Form4.LabelSchedule3.Caption := sch[2].ToString;
-    Form4.LabelSchedule4.Caption := sch[3].ToString;
-    Form4.LabelSchedule5.Caption := sch[4].ToString;
-    Form4.LabelSchedule6.Caption := sch[5].ToString;
-    SaveShedulesToFile(Schedules);
+    PrintSchedule(Schedules[SchedulesList.Items.IndexOf(SchedulesList.Text)]);
 end;
 
 procedure WeekReady(Week: Byte);
 begin
     CurrentWeek := Week;
-    Form4.WeekNumberLabel.Caption := '–Ω–æ–º–µ—Ä —Ç–µ–∫—É—â–µ–π –Ω–µ–¥–µ–ª–∏: ' + IntToStr(Week);
+    MainForm.WeekNumberLabel.Caption := 'ÌÓÏÂ ÚÂÍÛ˘ÂÈ ÌÂ‰ÂÎË: ' +
+      IntToStr(Week);
 end;
 
-function LoadSchedulesFromFile(): TList<TSchedule>;
-var
-    InputFile: TextFile;
-    Json: String;
-begin
-    Result := TList<TSchedule>.Create;
-    if FileExists('schediles.dat') then
-    begin
-        AssignFile(InputFile, 'schediles.dat');
-        Reset(InputFile);
-        Read(InputFile, Json);
-        Result := TJson.JsonToObject < TList < TSchedule >> (Json);
-        CloseFile(InputFile);
-    end;
-end;
-
-procedure TForm4.FormCreate(Sender: TObject);
+procedure TMainForm.FormCreate(Sender: TObject);
 var
     I: Integer;
     NewImage: TImage;
     NewLabel: TLabel;
     NewPannel: TPanel;
+    Lines: TList<String>;
 begin
-    Schedules := LoadSchedulesFromFile();
+    Schedules := LoadSchedules();
+    Lines := LoadTutors();
+    if Lines.Count <> 0 then
+        for I := 0 to Lines.Count - 1 do
+            SearchList.Items.Add(Lines[I]);
+    Lines := LoadGroups();
+    GroupsIndex := SearchList.Items.Count;
+    if Lines.Count <> 0 then
+        for I := 0 to Lines.Count - 1 do
+            SearchList.Items.Add(Lines[I]);
     for I := 0 to Schedules.Count - 1 do
-        Form4.CBReady.Items.Add(Schedules[I].Info);
+        MainForm.SchedulesList.Items.Add(Schedules[I].Info);
     Parser := MyTparser.Create(true);
     Parser.OnGroupsReady := DisplayGroups;
     Parser.OnTutorsReady := DisplayTutors;
     Parser.OnGroupScheduleReady := PrintSchedule;
-    Parser.OnTutorScheduleReady := B;
+    Parser.OnTutorScheduleReady := PrintSchedule;
 
     Parser.OnWeekReady := WeekReady;
     Parser.Start();

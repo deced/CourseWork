@@ -1,7 +1,7 @@
-object Form4: TForm4
+object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'Form4'
+  Caption = 'MainForm'
   ClientHeight = 640
   ClientWidth = 1507
   Color = clBtnFace
@@ -88,15 +88,6 @@ object Form4: TForm4
     Height = 194
     Stretch = True
   end
-  object Button1: TButton
-    Left = 18
-    Top = 88
-    Width = 75
-    Height = 25
-    Caption = #1043#1088#1091#1087#1087#1072
-    TabOrder = 0
-    OnClick = Button1Click
-  end
   object Memo1: TMemo
     Left = 401
     Top = 494
@@ -105,7 +96,7 @@ object Form4: TForm4
     Lines.Strings = (
       'Memo1')
     ScrollBars = ssVertical
-    TabOrder = 1
+    TabOrder = 0
   end
   object Memo2: TMemo
     Left = 201
@@ -115,22 +106,15 @@ object Form4: TForm4
     Lines.Strings = (
       'Memo1')
     ScrollBars = ssVertical
-    TabOrder = 2
-  end
-  object CBGroups: TComboBox
-    Left = 18
-    Top = 24
-    Width = 215
-    Height = 21
-    TabOrder = 3
+    TabOrder = 1
   end
   object Button2: TButton
-    Left = 99
-    Top = 88
+    Left = 25
+    Top = 35
     Width = 75
     Height = 25
-    Caption = #1055#1088#1077#1087#1086#1076
-    TabOrder = 4
+    Caption = #1055#1086#1080#1089#1082
+    TabOrder = 2
     OnClick = Button2Click
   end
   object Button3: TButton
@@ -139,15 +123,16 @@ object Form4: TForm4
     Width = 75
     Height = 25
     Caption = 'Button3'
-    TabOrder = 5
+    TabOrder = 3
     OnClick = Button3Click
   end
-  object CBTutors: TComboBox
-    Left = 18
-    Top = 51
+  object SearchList: TComboBox
+    Left = 20
+    Top = 8
     Width = 215
     Height = 21
-    TabOrder = 6
+    Style = csSimple
+    TabOrder = 4
   end
   object GroupMonday: TGroupBox
     Left = 272
@@ -155,7 +140,7 @@ object Form4: TForm4
     Width = 250
     Height = 120
     Caption = #1055#1086#1085#1077#1076#1077#1083#1100#1085#1080#1082
-    TabOrder = 7
+    TabOrder = 5
     object LabelSchedule1: TLabel
       Left = 16
       Top = 24
@@ -170,7 +155,7 @@ object Form4: TForm4
     Width = 250
     Height = 120
     Caption = #1042#1090#1086#1088#1085#1080#1082
-    TabOrder = 8
+    TabOrder = 6
     object LabelSchedule2: TLabel
       Left = 16
       Top = 24
@@ -185,7 +170,7 @@ object Form4: TForm4
     Width = 250
     Height = 120
     Caption = #1057#1088#1077#1076#1072
-    TabOrder = 9
+    TabOrder = 7
     object LabelSchedule3: TLabel
       Left = 16
       Top = 24
@@ -200,7 +185,7 @@ object Form4: TForm4
     Width = 250
     Height = 120
     Caption = #1063#1077#1090#1074#1077#1088#1075
-    TabOrder = 10
+    TabOrder = 8
     object LabelSchedule4: TLabel
       Left = 16
       Top = 24
@@ -215,7 +200,7 @@ object Form4: TForm4
     Width = 250
     Height = 120
     Caption = #1055#1103#1090#1085#1080#1094#1072
-    TabOrder = 11
+    TabOrder = 9
     object LabelSchedule5: TLabel
       Left = 16
       Top = 24
@@ -230,7 +215,7 @@ object Form4: TForm4
     Width = 250
     Height = 120
     Caption = #1057#1091#1073#1073#1086#1090#1072
-    TabOrder = 12
+    TabOrder = 10
     object LabelSchedule6: TLabel
       Left = 16
       Top = 24
@@ -244,14 +229,14 @@ object Form4: TForm4
     Top = 329
     Width = 482
     Height = 288
-    TabOrder = 13
+    TabOrder = 11
   end
-  object CBReady: TComboBox
+  object SchedulesList: TComboBox
     Left = 400
     Top = 352
     Width = 145
     Height = 21
-    TabOrder = 14
+    TabOrder = 12
   end
   object Button4: TButton
     Left = 400
@@ -259,7 +244,7 @@ object Form4: TForm4
     Width = 75
     Height = 25
     Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
-    TabOrder = 15
+    TabOrder = 13
     OnClick = Button4Click
   end
   object DaySchedule: TScrollBox
@@ -267,7 +252,7 @@ object Form4: TForm4
     Top = 200
     Width = 313
     Height = 313
-    TabOrder = 16
+    TabOrder = 14
   end
   object IdHTTP1: TIdHTTP
     AllowCookies = True
