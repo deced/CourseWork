@@ -87,7 +87,6 @@ begin
       + ' ' + Subject.Tutor.MiddleName;
     GroupEdit.Text := Subject.Group;
     AuditoryEdit.Text := Subject.Auditory;
-    ShowSubjectForm := self;
     if Subject.Tutor.PhotoLink <> '' then
     begin
         ImageParser := TImageParser.create(true);

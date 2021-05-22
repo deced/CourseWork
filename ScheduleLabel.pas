@@ -3,7 +3,7 @@ unit ScheduleLabel;
 interface
 
 uses Vcl.StdCtrls, Vcl.Controls, Schedule, Vcl.Graphics, Vcl.ExtCtrls,
-    System.Types, Windows, Vcl.Menus, ImageParser, System.Classes;
+    System.Types, Windows, Vcl.Menus, ImageParser, System.Classes, CustomTypes;
 
 type
     TScheduleLabel = class
@@ -25,24 +25,21 @@ type
 
 implementation
 
-const
-    ImageSize = 100;
-
 procedure TScheduleLabel.CreateControls(Parent: TWinControl);
 begin
     Image := TImage.Create(Parent);
-    ScheduleInfo := TLabel.Create(Parent);
     Bevel := TBevel.Create(Parent);
+    ScheduleInfo := TLabel.Create(Parent);
 end;
 
 procedure TScheduleLabel.SetLocation(Y: Integer);
 begin
-    Image.Top := Y;
-    Image.Left := 0;
+    Image.Top := Y+2;
+    Image.Left := 2;
     Bevel.Top := Y;
     Bevel.Left := 0;
     ScheduleInfo.Top := Y;
-    ScheduleInfo.Left := ImageSize + 5;
+    ScheduleInfo.Left := ScheduleItemHeight + 5;
 
 end;
 
@@ -71,30 +68,30 @@ end;
 
 procedure TScheduleLabel.SetParent(Parent: TWinControl);
 begin
-    ScheduleInfo.Parent := Parent;
-    Image.Parent := Parent;
     Bevel.Parent := Parent;
+    Image.Parent := Parent;
+    ScheduleInfo.Parent := Parent;
 end;
 
 procedure TScheduleLabel.ConfigureBevel(Parent: TWinControl);
 begin
     Bevel.Width := Parent.Width;
-    Bevel.Height := ImageSize;
+    Bevel.Height := ScheduleItemHeight;
 end;
 
 procedure TScheduleLabel.ConfigureLabel(Parent: TWinControl);
 begin
     ScheduleInfo.AutoSize := false;
-    ScheduleInfo.Width := Parent.Width - ImageSize;
-    ScheduleInfo.Height := ImageSize;
+    ScheduleInfo.Width := Parent.Width;
+    ScheduleInfo.Height := ScheduleItemHeight;
     ScheduleInfo.Font.Size := 16;
     ScheduleInfo.WordWrap := true;
 end;
 
 procedure TScheduleLabel.ConfigureImage();
 begin
-    Image.Height := ImageSize;
-    Image.Width := ImageSize;
+    Image.Height := ScheduleItemHeight-4;
+    Image.Width := ScheduleItemHeight-4;
     Image.Stretch := true;
 end;
 

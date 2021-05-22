@@ -29,19 +29,25 @@ object MainForm: TMainForm
     Height = 13
     Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1088#1072#1089#1087#1080#1089#1072#1085#1080#1103
   end
-  object Label3: TLabel
-    Left = 25
-    Top = 85
-    Width = 113
-    Height = 13
-    Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1088#1072#1089#1087#1080#1089#1072#1085#1080#1077
-  end
   object DayLabel: TLabel
     Left = 264
     Top = 59
     Width = 84
     Height = 25
     Caption = 'DayLabel'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -21
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label1: TLabel
+    Left = 18
+    Top = 89
+    Width = 250
+    Height = 25
+    Caption = #1057#1086#1093#1088#1072#1085#1105#1085#1085#1099#1077' '#1088#1072#1089#1087#1080#1089#1072#1085#1080#1103
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -21
@@ -66,29 +72,13 @@ object MainForm: TMainForm
     Style = csSimple
     TabOrder = 1
   end
-  object SchedulesList: TComboBox
-    Left = 20
-    Top = 104
-    Width = 145
-    Height = 21
-    TabOrder = 2
-  end
-  object Button4: TButton
-    Left = 20
-    Top = 131
-    Width = 75
-    Height = 25
-    Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
-    TabOrder = 3
-    OnClick = Button4Click
-  end
   object Button3: TButton
     Left = 480
     Top = 494
     Width = 75
     Height = 25
     Caption = #1053#1072#1079#1072#1076
-    TabOrder = 4
+    TabOrder = 2
     OnClick = Button3Click
   end
   object Button5: TButton
@@ -97,7 +87,7 @@ object MainForm: TMainForm
     Width = 75
     Height = 25
     Caption = #1042#1087#1077#1088#1105#1076
-    TabOrder = 5
+    TabOrder = 3
     OnClick = Button5Click
   end
   object ScrollBox: TScrollBox
@@ -110,19 +100,20 @@ object MainForm: TMainForm
     VertScrollBar.Tracking = True
     BevelInner = bvNone
     BevelOuter = bvNone
-    TabOrder = 6
+    TabOrder = 4
   end
   object SchedulesScrollBox: TScrollBox
     Left = 20
-    Top = 162
+    Top = 120
     Width = 309
-    Height = 459
+    Height = 501
     HorzScrollBar.Visible = False
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     BevelInner = bvNone
     BevelOuter = bvNone
-    TabOrder = 7
+    TabOrder = 5
+    OnClick = SchedulesScrollBoxClick
   end
   object MainMenu: TMainMenu
     Left = 744

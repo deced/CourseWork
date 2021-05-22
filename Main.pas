@@ -18,21 +18,18 @@ type
         Button2: TButton;
         SearchList: TComboBox;
         WeekNumberLabel: TLabel;
-        SchedulesList: TComboBox;
-        Button4: TButton;
         Label2: TLabel;
         MainMenu: TMainMenu;
         N1: TMenuItem;
         N2: TMenuItem;
-        Label3: TLabel;
         Button3: TButton;
         Button5: TButton;
         DayLabel: TLabel;
         ScrollBox: TScrollBox;
         SchedulesScrollBox: TScrollBox;
+    Label1: TLabel;
         procedure FormCreate(Sender: TObject);
         procedure Button2Click(Sender: TObject);
-        procedure Button4Click(Sender: TObject);
         procedure PrintDay(Day: TDay);
         procedure FillComboBox(Tutors: TTutorsList; Groups: TGroupsList);
         procedure Button5Click(Sender: TObject);
@@ -40,6 +37,13 @@ type
         procedure OnClick(Sender: TObject);
         procedure OnChangeSubject(Sender: TObject);
         procedure OnDeleteClick(Sender: TObject);
+        procedure OnScheduleClick(Sender: TObject);
+        procedure DisplayGroups(Inp: TGroupsList);
+        procedure DisplayTutors(Inp: TTutorsList);
+        procedure AddSchedule(Schedule: TSchedule);
+        procedure PrintSchedules();
+        procedure SchedulesScrollBoxClick(Sender: TObject);
+        procedure AddSchedules(Input: TList<TSchedule>);
     private
         { Private declarations }
     public
@@ -64,6 +68,16 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TMainForm.OnScheduleClick(Sender: TObject);
+var
+    ScheduleIndex: Integer;
+begin
+    ScheduleIndex := (Sender as TControl).Top div ScheduleItemHeight;
+    CurrentSchedule := Schedules[ScheduleIndex];
+    AddSchedule(CurrentSchedule);
+end;
+
 procedure TMainForm.OnClick(Sender: TObject);
 var
     SubjectIindex: Integer;
@@ -112,7 +126,7 @@ begin
       .PopupPoint;
     Point := ScrollBox.ScreenToClient(Point);
     SubjectIindex := Point.Y div 60;
-    ShowMessage(INtTOStr(SubjectIindex) + ' ' + CurrentSchedule.GetWeek
+    ShowMessage(inttostr(SubjectIindex) + ' ' + CurrentSchedule.GetWeek
       (CurrentWeek)[DayIndex].Subjects[SubjectIindex].ToString);
     CurrentSchedule.Week[DayIndex].Subjects.RemoveItem
       (CurrentSchedule.GetWeek(CurrentWeek)[DayIndex].Subjects[SubjectIindex],
@@ -148,18 +162,18 @@ begin
     end;
 end;
 
-procedure DisplayGroups(Inp: TGroupsList);
+procedure TMainForm.DisplayGroups(Inp: TGroupsList);
 var
     I: Integer;
 begin
     for I := 0 to Inp.Count - 1 do
     begin
-        MainForm.SearchList.Items.Add(Inp[I].Id)
+        SearchList.Items.Add(Inp[I].Id)
     end;
     SaveGroups(Inp);
 end;
 
-procedure DisplayTutors(Inp: TTutorsList);
+procedure TMainForm.DisplayTutors(Inp: TTutorsList);
 var
     I: Integer;
 begin
@@ -173,11 +187,44 @@ begin
     SaveTutors(Inp);
 end;
 
-procedure PrintSchedule(Schedule: TSchedule);
+procedure TMainForm.AddSchedules(Input: TList<TSchedule>);
+begin
+    Schedules := Input;
+    PrintSchedules;
+end;
+
+procedure TMainForm.PrintSchedules();
+var
+    I: Integer;
+    ScheduleLabel: TScheduleLabel;
+begin
+    for I := 0 to Schedules.Count - 1 do
+    begin
+        if ScheduleLabels.Count > I then
+        begin
+            ScheduleLabel := ScheduleLabels[I];
+            ScheduleLabel.SetLocation((I * ScheduleItemHeight) -
+              ((SchedulesScrollBox.VertScrollBar.Position div
+              ScheduleItemHeight) * ScheduleItemHeight));
+        end
+        else
+        begin
+            ScheduleLabel := TScheduleLabel.Create(SchedulesScrollBox,
+              (I * ScheduleItemHeight) -
+              ((SchedulesScrollBox.VertScrollBar.Position div
+              ScheduleItemHeight) * ScheduleItemHeight));
+            ScheduleLabel.ScheduleInfo.OnClick := OnScheduleClick;
+            ScheduleLabel.Image.OnClick := OnScheduleClick;
+            ScheduleLabels.Add(ScheduleLabel);
+        end;
+        ScheduleLabel.SetText(Schedules[I]);
+    end;
+end;
+
+procedure TMainForm.AddSchedule(Schedule: TSchedule);
 var
     I: Integer;
     Flag: Boolean;
-    ScheduleLabel: TScheduleLabel;
 begin
     Flag := False;
     for I := 0 to Schedules.Count - 1 do
@@ -188,24 +235,15 @@ begin
         end;
     if not Flag then
         Schedules.Add(Schedule);
-    for I := 0 to Schedules.Count - 1 do
-    begin
-        if ScheduleLabels.Count > I then
-            ScheduleLabel := ScheduleLabels[I]
-        else
-        begin
-            ScheduleLabel := TScheduleLabel.Create(MainForm.SchedulesScrollBox,
-              (I * 100) -
-              ((MainForm.SchedulesScrollBox.VertScrollBar.Position
-              div 100) * 100));
-            ScheduleLabels.Add(ScheduleLabel);
-        end;
-        ScheduleLabel.ScheduleInfo.OnClick := MainForm.OnScheduleClick;
-        ScheduleLabel.SetText(Schedules[I]);
-    end;
-    MainForm.PrintDay(Schedule.GetWeek(CurrentWeek)[DayIndex]);
+    PrintSchedules;
+    PrintDay(Schedule.GetWeek(CurrentWeek)[DayIndex]);
     CurrentSchedule := Schedule;
     SaveShedules(Schedules);
+end;
+
+procedure TMainForm.SchedulesScrollBoxClick(Sender: TObject);
+begin
+    ShowMessage('');
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -217,9 +255,9 @@ begin
     begin
         if SearchList.Items.IndexOf(SearchList.Text) < GroupsIndex then
 
-            Parser.GetTutorSchedule(Tutors[SearchList.ItemIndex].Id)
+            Parser.ParseTutorSchedule(Tutors[SearchList.ItemIndex].Id)
         else
-            Parser.GetGroupSchedule(SearchList.Text);
+            Parser.ParseGroupSchedule(SearchList.Text);
     end
     else
     begin
@@ -235,14 +273,6 @@ begin
     PrintDay(CurrentSchedule.GetWeek(CurrentWeek)[DayIndex]);
 end;
 
-procedure TMainForm.Button4Click(Sender: TObject);
-var
-    sch: TSchedule;
-begin
-    CurrentSchedule := Schedules
-      [SchedulesList.Items.IndexOf(SchedulesList.Text)];
-    PrintSchedule(CurrentSchedule);
-end;
 
 procedure TMainForm.Button5Click(Sender: TObject);
 begin
@@ -256,7 +286,7 @@ procedure WeekReady(Week: Byte);
 begin
     CurrentWeek := Week;
     MainForm.WeekNumberLabel.Caption := 'номер текущей недели: ' +
-      INtTOStr(Week);
+      inttostr(Week);
     SaveWeekIndexToFile(CurrentWeek);
 end;
 
@@ -279,19 +309,17 @@ var
 
 begin
     DayIndex := DayOfTheWeek(Date) - 1;
+    if DayIndex = 6 then
+        DayIndex := 0;
     DayLabel.Caption := Days[DayIndex];
     SubjectLabels := TList<TSubjectLabel>.Create;
     ScheduleLabels := TList<TScheduleLabel>.Create;
-    // todo вынести чтение расписаний в парсер
-    Schedules := LoadSchedules();
-    for I := 0 to Schedules.Count - 1 do
-        MainForm.SchedulesList.Items.Add(Schedules[I].Info);
     Parser := MyTparser.Create(True);
     Parser.OnGroupsReady := DisplayGroups;
     Parser.OnTutorsReady := DisplayTutors;
-    Parser.OnGroupScheduleReady := PrintSchedule;
-    Parser.OnTutorScheduleReady := PrintSchedule;
-
+    Parser.OnGroupScheduleReady := AddSchedule;
+    Parser.OnTutorScheduleReady := AddSchedule;
+    Parser.OnSchedulesReady := AddSchedules;
     Parser.OnWeekReady := WeekReady;
     Parser.Start();
 end;

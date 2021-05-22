@@ -1,17 +1,8 @@
 ﻿[Button2]
 Coordinates=227,144,59,58
 
-[Button4]
-Coordinates=158,144,59,58
-
-[SchedulesList]
-Coordinates=10,10,101,124
-
 [SearchList]
 Coordinates=121,10,101,124
-
-[Label3]
-Coordinates=232,10,53,58
 
 [Label2]
 Coordinates=296,144,53,58
@@ -42,5 +33,5 @@ Coordinates=10,212,69,36
 Coordinates=366,78,74,36
 
 []
-Coordinates=366,133,91,36
+Coordinates=158,144,59,58
 

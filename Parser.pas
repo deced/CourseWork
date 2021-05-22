@@ -3,7 +3,8 @@ unit Parser;
 interface
 
 uses Group, Tutor, System.Classes, System.Net.HttpClient,
-    Vcl.StdCtrls, SysUtils, CustomTypes, JsonFactory, IO;
+    Vcl.StdCtrls, SysUtils, CustomTypes, JsonFactory, IO, Schedule,
+    Generics.Collections;
 
 type
     MyTParser = class(TThread)
@@ -12,82 +13,135 @@ type
         OnTutorsReady: TTutorsParsedEvent;
         OnGroupScheduleReady: TGroupSheduleParsedEvent;
         OnTutorScheduleReady: TTutorScheduleParsedEvent;
+        OnSchedulesReady: TSchedulesParsedEvent;
+        procedure ParseTutorSchedule(Id: String);
+        procedure ParseGroupSchedule(GroupID: String);
+    protected
         GroupID, TutorId: String;
         procedure Execute; Override;
-        procedure GetGroupSchedule(GroupID: String);
-        procedure GetTutorSchedule(Id: String);
+        function GetWeekIndex(): Byte;
+        function GetTutorSchedule(TutorId: String): TSchedule;
+        function GetGroupSchedule(GroupID: string): TSchedule;
+        function GetSchedules(): TList<TSchedule>;
+        function GetTutors(): TTutorsList;
+        function GetGroups(): TGroupsList;
     end;
 
 implementation
 
-procedure MyTParser.GetTutorSchedule(Id: String);
+procedure MyTParser.ParseTutorSchedule(Id: String);
 begin
     Self.TutorId := Id;
     Self.Resume;
 end;
 
-procedure MyTParser.GetGroupSchedule(GroupID: String);
+procedure MyTParser.ParseGroupSchedule(GroupID: String);
 begin
     Self.GroupID := GroupID;
     Self.Resume;
 end;
 
-procedure MyTParser.Execute;
+function MyTParser.GetWeekIndex(): Byte;
 var
     HttpClient: THttpClient;
     HttpResponse: IHttpResponse;
-    I: Integer;
-    Course: Byte;
+begin
+    Result := LoadWeekIndexFromFile;
+    if Result = 255 then
+    begin
+        HttpClient := THttpClient.Create;
+        HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
+        Result := StrToInt(HttpResponse.ContentAsString());
+    end;
+end;
+
+function MyTParser.GetTutors(): TTutorsList;
+var
+    HttpClient: THttpClient;
+    HttpResponse: IHttpResponse;
+begin
+    Result := LoadTutors();
+    if Result.Count = 0 then
+    begin
+        HttpClient := THttpClient.Create;
+        HttpResponse := HttpClient.Get
+          ('https://journal.bsuir.by/api/v1/employees');
+        Result := TJsonFactory.GetTutors(HttpResponse.ContentAsString());
+    end;
+end;
+
+function MyTParser.GetGroups(): TGroupsList;
+var
+    HttpClient: THttpClient;
+    HttpResponse: IHttpResponse;
+begin
+    Result := LoadGroups();
+    if Result.Count = 0 then
+    begin
+        HttpClient := THttpClient.Create;
+        HttpResponse := HttpClient.Get
+          ('https://journal.bsuir.by/api/v1/groups');
+        Result := TJsonFactory.GetGroups(HttpResponse.ContentAsString());
+    end;
+end;
+
+function MyTParser.GetSchedules(): TList<TSchedule>;
+begin
+    Result := LoadSchedules;
+end;
+
+function MyTParser.GetTutorSchedule(TutorId: String): TSchedule;
+var
+    HttpClient: THttpClient;
+    HttpResponse: IHttpResponse;
+begin
+    HttpClient := THttpClient.Create;
+    HttpResponse := HttpClient.Get
+      ('https://journal.bsuir.by/api/v1/portal/employeeSchedule?employeeId='
+      + TutorId);
+    Result := TJsonFactory.GetTutorSchedule(HttpResponse.ContentAsString());
+end;
+
+function MyTParser.GetGroupSchedule(GroupID: string): TSchedule;
+var
+    HttpClient: THttpClient;
+    HttpResponse: IHttpResponse;
+begin
+    HttpClient := THttpClient.Create;
+    HttpResponse := HttpClient.Get
+      ('https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup='
+      + GroupID);
+    Result := TJsonFactory.GetGroupShedule(HttpResponse.ContentAsString());
+end;
+
+procedure MyTParser.Execute;
+var
     WeekIndex: Byte;
     Groups: TGroupsList;
     Tutors: TTutorsList;
+    Schedule: TSchedule;
+    Schedules: TList<TSchedule>;
 begin
-    HttpClient := THttpClient.Create;
-    WeekIndex := LoadWeekIndexFromFile;
-    if WeekIndex = -1 then
-    begin
-        HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
-        WeekIndex := StrToInt(HttpResponse.ContentAsString());
-    end;
+    WeekIndex := GetWeekIndex;
     OnWeekReady(WeekIndex);
-    Groups := LoadGroups();
-    Tutors := LoadTutors();
-    if Tutors.Count = 0 then
-    begin
-        HttpResponse := HttpClient.Get
-          ('https://journal.bsuir.by/api/v1/employees');
-        Tutors := TJsonFactory.GetTutors(HttpResponse.ContentAsString());
-    end;
+    Tutors := GetTutors();
     OnTutorsReady(Tutors);
-    if Groups.Count = 0 then
-    begin
-        HttpResponse := HttpClient.Get
-          ('https://journal.bsuir.by/api/v1/groups');
-        Groups := TJsonFactory.GetGroups(HttpResponse.ContentAsString());
-    end;
+    Groups := GetGroups();
     OnGroupsReady(Groups);
-
-    HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/auditory');
+    Schedules := GetSchedules();
+    OnSchedulesReady(Schedules);
     while (true) do
     begin
-            if GroupID <> '' then
+        if GroupID <> '' then
         begin
-            HttpResponse :=
-              HttpClient.Get
-              ('https://journal.bsuir.by/api/v1/studentGroup/schedule?studentGroup='
-              + GroupID);
-            OnGroupScheduleReady
-              (TJsonFactory.GetGroupShedule(HttpResponse.ContentAsString()));
+            Schedule := GetGroupSchedule(GroupID);
+            OnGroupScheduleReady(Schedule);
             GroupID := '';
         end;
         if TutorId <> '' then
         begin
-            HttpResponse :=
-              HttpClient.Get
-              ('https://journal.bsuir.by/api/v1/portal/employeeSchedule?employeeId='
-              + TutorId);
-            OnTutorScheduleReady
-              (TJsonFactory.GetTutorSchedule(HttpResponse.ContentAsString()));
+            Schedule := GetTutorSchedule(TutorId);
+            OnTutorScheduleReady(Schedule);
             TutorId := '';
         end;
         Self.Suspend;

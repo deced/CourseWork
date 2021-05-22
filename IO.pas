@@ -37,7 +37,7 @@ begin
     end
     else
     begin
-        Result := -1;
+        Result := 255;
     end;
 end;
 
@@ -52,9 +52,10 @@ begin
         Reset(OutputFile);
         Readln(OutputFile);
         Readln(OutputFile, CurrentWeek);
+        if CurrentWeek <> WeekOfTheYear(Date) then
+            Index := (Index + (WeekOfTheYear(Date) - CurrentWeek)) mod 4;
     end;
-    if CurrentWeek <> WeekOfTheYear(Date) then
-        Index := (Index + (WeekOfTheYear(Date) - CurrentWeek)) mod 4;
+
     Rewrite(OutputFile);
     Writeln(OutputFile, Index);
     Writeln(OutputFile, WeekOfTheYear(Date));
@@ -73,7 +74,7 @@ begin
         Reset(InputFile);
         Readln(InputFile, Input);
         Result := TJson.JsonToObject<TGroupsList>(Input);
-          CloseFile(InputFile);
+        CloseFile(InputFile);
     end;
 
 end;
