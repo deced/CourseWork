@@ -10,10 +10,12 @@ type
     TDay = class
     private
         FSubjects: TSubjects;
+        FName: String;
     public
         property Subjects: TSubjects read FSubjects write FSubjects;
+        property Name: String read FName write FName;
         function ToString(): String; override;
-        constructor Create(Subjects: TSubjects);
+        constructor Create(Subjects: TSubjects; Name: String);
     end;
 
 implementation
@@ -30,9 +32,10 @@ begin
     end;
 end;
 
-constructor TDay.Create(Subjects: TSubjects);
+constructor TDay.Create(Subjects: TSubjects; Name: String);
 begin
     self.Subjects := Subjects;
+    self.Name := Name;
 end;
 
 end.

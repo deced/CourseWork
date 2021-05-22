@@ -103,6 +103,13 @@
         <DCCReference Include="Tutor.pas"/>
         <DCCReference Include="CustomTypes.pas"/>
         <DCCReference Include="IO.pas"/>
+        <DCCReference Include="ShowSubject.pas">
+            <Form>ShowSubjectForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="SubjectLabel.pas"/>
+        <DCCReference Include="ImageParser.pas"/>
+        <DCCReference Include="ScheduleLabel.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

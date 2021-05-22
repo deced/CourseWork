@@ -3,7 +3,7 @@ unit Parser;
 interface
 
 uses Group, Tutor, System.Classes, System.Net.HttpClient,
-    Vcl.StdCtrls, SysUtils, CustomTypes, JsonFactory;
+    Vcl.StdCtrls, SysUtils, CustomTypes, JsonFactory, IO;
 
 type
     MyTParser = class(TThread)
@@ -38,19 +38,39 @@ var
     HttpResponse: IHttpResponse;
     I: Integer;
     Course: Byte;
+    WeekIndex: Byte;
+    Groups: TGroupsList;
+    Tutors: TTutorsList;
 begin
     HttpClient := THttpClient.Create;
-    HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
-    OnWeekReady(StrToInt(HttpResponse.ContentAsString()));
-    HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/groups');
-    OnGroupsReady(TJsonFactory.GetGroups(HttpResponse.ContentAsString()));
-    HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/employees');
-    OnTutorsReady(TJsonFactory.GetTutors(HttpResponse.ContentAsString()));
+    WeekIndex := LoadWeekIndexFromFile;
+    if WeekIndex = -1 then
+    begin
+        HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
+        WeekIndex := StrToInt(HttpResponse.ContentAsString());
+    end;
+    OnWeekReady(WeekIndex);
+    Groups := LoadGroups();
+    Tutors := LoadTutors();
+    if Tutors.Count = 0 then
+    begin
+        HttpResponse := HttpClient.Get
+          ('https://journal.bsuir.by/api/v1/employees');
+        Tutors := TJsonFactory.GetTutors(HttpResponse.ContentAsString());
+    end;
+    OnTutorsReady(Tutors);
+    if Groups.Count = 0 then
+    begin
+        HttpResponse := HttpClient.Get
+          ('https://journal.bsuir.by/api/v1/groups');
+        Groups := TJsonFactory.GetGroups(HttpResponse.ContentAsString());
+    end;
+    OnGroupsReady(Groups);
 
     HttpResponse := HttpClient.Get('https://journal.bsuir.by/api/v1/auditory');
     while (true) do
     begin
-        if GroupID <> '' then
+            if GroupID <> '' then
         begin
             HttpResponse :=
               HttpClient.Get

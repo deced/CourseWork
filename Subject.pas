@@ -15,6 +15,7 @@ type
         FTutor: TTutor;
         FAuditory: String;
         FSubjectType: String;
+        FGroup: String;
         FWeeks: TWeekNums;
     public
         property StartTime: String read FStartTime write FStartTime;
@@ -23,10 +24,11 @@ type
         property Tutor: TTutor read FTutor write FTutor;
         property Auditory: String read FAuditory write FAuditory;
         property SubjectType: String read FSubjectType write FSubjectType;
+        property Group: String read FGroup write FGroup;
         property Weeks: TWeekNums read FWeeks write FWeeks;
         function ToString(): String; override;
         constructor Create(StartT, EndT: String; SubjectName: string;
-          Tutor: TTutor; Auditory: String; SubjectType: String;
+          Tutor: TTutor; Auditory: String; SubjectType: String; Group: String;
           Weeks: TWeekNums);
 
     end;
@@ -40,7 +42,8 @@ begin
 end;
 
 constructor TSubject.Create(StartT, EndT: String; SubjectName: string;
-  Tutor: TTutor; Auditory: String; SubjectType: String; Weeks: TWeekNums);
+  Tutor: TTutor; Auditory: String; SubjectType: String; Group: String;
+  Weeks: TWeekNums);
 begin
     Self.StartTime := StartT;
     Self.EndTime := EndT;
@@ -48,6 +51,7 @@ begin
     Self.Tutor := Tutor;
     Self.Auditory := Auditory;
     Self.SubjectType := SubjectType;
+    Self.Group := Group;
     Self.Weeks := Weeks;
 end;
 

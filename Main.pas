@@ -5,192 +5,214 @@ interface
 uses
     Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
     System.Classes, Vcl.Graphics,
-    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, IdHTTP, Vcl.StdCtrls, IdBaseComponent,
+    Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, IdBaseComponent,
     IdComponent, IdTCPConnection, System.Net.HttpClient,
     Parser, JsonFactory, CustomTypes, Vcl.ExtCtrls, PngImage,
     Schedule, Vcl.Imaging.jpeg, IdTCPClient, Generics.Collections, Day,
-    Rest.Json, IO;
+    Rest.Json, IO, Vcl.Menus, SubjectLabel, ShowSubject, Subject, DateUtils,
+    System.Types, ScheduleLabel;
 
 type
+
     TMainForm = class(TForm)
-        Memo1: TMemo;
-        Memo2: TMemo;
         Button2: TButton;
-        Image1: TImage;
-        Button3: TButton;
-        Label1: TLabel;
         SearchList: TComboBox;
-        GroupMonday: TGroupBox;
-        LabelSchedule1: TLabel;
-        GroupTuesday: TGroupBox;
-        LabelSchedule2: TLabel;
-        GroupWednesday: TGroupBox;
-        LabelSchedule3: TLabel;
-        GroupThursday: TGroupBox;
-        LabelSchedule4: TLabel;
-        GroupFriday: TGroupBox;
-        LabelSchedule5: TLabel;
-        GroupSaturday: TGroupBox;
-        LabelSchedule6: TLabel;
-        Image2: TImage;
-        Image3: TImage;
-        Image4: TImage;
-        Image5: TImage;
-        Image6: TImage;
-        Image7: TImage;
-        TestLabel: TLabel;
         WeekNumberLabel: TLabel;
-        ScrollBox: TScrollBox;
-        Image8: TImage;
-        IdHTTP1: TIdHTTP;
         SchedulesList: TComboBox;
         Button4: TButton;
-        DaySchedule: TScrollBox;
+        Label2: TLabel;
+        MainMenu: TMainMenu;
+        N1: TMenuItem;
+        N2: TMenuItem;
+        Label3: TLabel;
+        Button3: TButton;
+        Button5: TButton;
+        DayLabel: TLabel;
+        ScrollBox: TScrollBox;
+        SchedulesScrollBox: TScrollBox;
         procedure FormCreate(Sender: TObject);
         procedure Button2Click(Sender: TObject);
-        procedure Button3Click(Sender: TObject);
         procedure Button4Click(Sender: TObject);
+        procedure PrintDay(Day: TDay);
+        procedure FillComboBox(Tutors: TTutorsList; Groups: TGroupsList);
+        procedure Button5Click(Sender: TObject);
+        procedure Button3Click(Sender: TObject);
+        procedure OnClick(Sender: TObject);
+        procedure OnChangeSubject(Sender: TObject);
+        procedure OnDeleteClick(Sender: TObject);
     private
         { Private declarations }
     public
-        { Public declarations }
     end;
+
+const
+    Days: Array of String = ['Понедельник', 'Вторник', 'Среда', 'Четверг',
+      'Пятница', 'Суббота'];
 
 var
     MainForm: TMainForm;
-    Tutors: TTutorsArray;
+    Tutors: TTutorsList;
     Parser: MyTparser;
     CurrentWeek: Byte;
     GroupsIndex: Integer;
     Schedules: TList<TSchedule>;
+    DayIndex: Integer;
+    SubjectLabels: TList<TSubjectLabel>;
+    ScheduleLabels: TList<TScheduleLabel>;
+    CurrentSchedule: TSchedule;
 
 implementation
 
 {$R *.dfm}
-
-procedure FillTutuors();
+procedure TMainForm.OnClick(Sender: TObject);
 var
-    I: Integer;
-    NewImage: TImage;
-    NewLabel: TLabel;
-    NewPannel: TPanel;
-    jpg: TJPEGImage;
-    fs: TFileStream;
+    SubjectIindex: Integer;
+    ShowSubjectForm: TShowSubjectForm;
 begin
-    { SetLength(Panels, 25);
-      for I := 0 to 20 do
-      begin
-      NewPannel := TPanel.Create(Form4);
-      NewPannel.parent := Form4.ScrollBox;
-      NewPannel.Left := 20;
-      NewPannel.Width := 300;
-      NewPannel.Height := 80;
-      NewPannel.top := I * 100;
-      NewLabel := TLabel.Create(Form4);
-      NewLabel.Caption := Tutors[I].Fio;
-      NewLabel.parent := NewPannel;
-      NewLabel.top := 20 * I;
-      NewImage := TImage.Create(Form4);
-      NewImage.top := 0;
-      NewImage.Left := 0;
-      NewImage.parent := NewPannel;
-
-      { try
-      ShowMessage('');
-      fs := TFileStream.Create(IntToStr(I) + '.png', fmCreate);
-      IdHTTP1.Get(Tutors[I].PhotoLink, fs);
-      NewImage.Picture.LoadFromFile(IntToStr(I) + '.png');
-
-      finally
-      fs.Free;
-      end; }
-    { NewImage.Height := 50;
-      NewImage.Width := 50;
-
-      Panels[I] := NewPannel;
-      end; }
+    SubjectIindex := (Sender as TLabel).Top div 60;
+    ShowSubjectForm := TShowSubjectForm.Create(self);
+    ShowSubjectForm.LoadSubject(CurrentSchedule.GetWeek(CurrentWeek)
+      [DayIndex].Subjects[SubjectIindex]);
+    ShowSubjectForm.Show;
 end;
 
-procedure DisplayGroups(Inp: TGroupsArray);
+procedure TMainForm.OnChangeSubject(Sender: TObject);
+var
+    SubjectIindex: Integer;
+    Point: TPoint;
+    ShowSubject: TShowSubjectForm;
+    Subject: TSubject;
+begin
+    Point := ((Sender as TMenuItem).GetParentComponent as TPopupMenu)
+      .PopupPoint;
+    Point := ScrollBox.ScreenToClient(Point);
+    SubjectIindex := Point.Y div 60;
+    ShowSubject := TShowSubjectForm.Create(self);
+    Subject := CurrentSchedule.GetWeek(CurrentWeek)[DayIndex].Subjects
+      [SubjectIindex];
+    ShowSubject.LoadSubjectForEditind(Subject);
+    ShowSubject.ShowModal;
+    if ShowSubject.ModalResult = mrYes then
+    begin
+        Subject := ShowSubject.Subject;
+        CurrentSchedule.Week[CurrentWeek].Subjects[SubjectIindex];
+        PrintDay(CurrentSchedule.GetWeek(CurrentWeek)[DayIndex]);
+    end;
+    SaveShedules(Schedules);
+end;
+
+procedure TMainForm.OnDeleteClick(Sender: TObject);
+var
+    SubjectIindex: Integer;
+    Point, Point2: TPoint;
+    ShowSubject: TShowSubjectForm;
+    Subject: TSubject;
+begin
+    Point := ((Sender as TMenuItem).GetParentComponent as TPopupMenu)
+      .PopupPoint;
+    Point := ScrollBox.ScreenToClient(Point);
+    SubjectIindex := Point.Y div 60;
+    ShowMessage(INtTOStr(SubjectIindex) + ' ' + CurrentSchedule.GetWeek
+      (CurrentWeek)[DayIndex].Subjects[SubjectIindex].ToString);
+    CurrentSchedule.Week[DayIndex].Subjects.RemoveItem
+      (CurrentSchedule.GetWeek(CurrentWeek)[DayIndex].Subjects[SubjectIindex],
+      FromBeginning);
+    PrintDay(CurrentSchedule.GetWeek(CurrentWeek)[DayIndex]);
+    SaveShedules(Schedules);
+end;
+
+procedure TMainForm.PrintDay(Day: TDay);
+var
+    I: Integer;
+    SuperLabel: TSubjectLabel;
+begin
+    DayLabel.Caption := Days[DayIndex];
+    for I := 0 to SubjectLabels.Count - 1 do
+        SubjectLabels[I].Clear;
+    for I := 0 to Day.Subjects.Count - 1 do
+    begin
+        if SubjectLabels.Count < I then
+        begin
+            SuperLabel := SubjectLabels[I];
+            SuperLabel.SetLocation(I * 60);
+        end
+        else
+        begin
+            SuperLabel := TSubjectLabel.Create(ScrollBox, I * 60);
+            SubjectLabels.Add(SuperLabel);
+        end;
+        SuperLabel.TimeStart.OnDblClick := OnClick;
+        SuperLabel.PopUpMenu.Items[0].OnClick := OnChangeSubject;
+        SuperLabel.PopUpMenu.Items[1].OnClick := OnDeleteClick;
+        SuperLabel.SetText(Day.Subjects[I]);
+    end;
+end;
+
+procedure DisplayGroups(Inp: TGroupsList);
 var
     I: Integer;
 begin
-    for I := 0 to High(Inp) do
+    for I := 0 to Inp.Count - 1 do
     begin
-        MainForm.Memo1.Lines.Add(Inp[I].ToString);
         MainForm.SearchList.Items.Add(Inp[I].Id)
     end;
-    SaveGroups(MainForm.SearchList.Items);
+    SaveGroups(Inp);
 end;
 
-procedure DisplayTutors(Inp: TTutorsArray);
+procedure DisplayTutors(Inp: TTutorsList);
 var
     I: Integer;
 begin
-    SetLength(Tutors, length(Tutors));
     Tutors := Inp;
-    for I := 0 to High(Inp) do
+    for I := 0 to Inp.Count - 1 do
     begin
-        MainForm.Memo2.Lines.Add(Inp[I].ToString);
         MainForm.SearchList.Items.Add(Inp[I].Fio);
 
     end;
-    SaveTutors(MainForm.SearchList.Items);
-    // FillTutuors();
-end;
-
-
-procedure PrintDay(Day: TDay);
-var
-    I: Integer;
-    FIOLabel, TutorLabel: TLabel;
-    Image: TImage;
-begin
-    { // Form4.DaySchedule := TScrollBox.Create(Form4);
-      for I := 0 to Day.Subjects.Count - 1 do
-      begin
-      FIOLabel := TLabel.Create(Form4);
-      TutorLabel := TLabel.Create(Form4);
-      FIOLabel.Top := 20 * I;
-      TutorLabel.Top := FIOLabel.Top + 10;
-      TutorLabel.Left := FIOLabel.Width - TutorLabel.Width;
-      // FIOLabel.Font.Size := 12;
-      TutorLabel.Parent := Form4.DaySchedule;
-      FIOLabel.Parent := Form4.DaySchedule;
-      FIOLabel.Caption := Day.Subjects[I].SubjectName + ' ' + Day.Subjects
-      [I].Auditory;
-      TutorLabel.Caption := Day.Subjects[I].Tutor.Fio;
-      end; }
+    GroupsIndex := Inp.Count;
+    SaveTutors(Inp);
 end;
 
 procedure PrintSchedule(Schedule: TSchedule);
+var
+    I: Integer;
+    Flag: Boolean;
+    ScheduleLabel: TScheduleLabel;
 begin
-    if MainForm.SchedulesList.Items.IndexOf(Schedule.Info) = -1 then
-    begin
-        MainForm.SchedulesList.Items.Add(Schedule.Info);
+    Flag := False;
+    for I := 0 to Schedules.Count - 1 do
+        if Schedules[I].Info = Schedule.Info then
+        begin
+            Schedules[I] := Schedule;
+            Flag := True;
+        end;
+    if not Flag then
         Schedules.Add(Schedule);
+    for I := 0 to Schedules.Count - 1 do
+    begin
+        if ScheduleLabels.Count > I then
+            ScheduleLabel := ScheduleLabels[I]
+        else
+        begin
+            ScheduleLabel := TScheduleLabel.Create(MainForm.SchedulesScrollBox,
+              (I * 100) -
+              ((MainForm.SchedulesScrollBox.VertScrollBar.Position
+              div 100) * 100));
+            ScheduleLabels.Add(ScheduleLabel);
+        end;
+        ScheduleLabel.ScheduleInfo.OnClick := MainForm.OnScheduleClick;
+        ScheduleLabel.SetText(Schedules[I]);
     end;
-    PrintDay(Schedule.GetWeek(CurrentWeek)[0]);
-    MainForm.LabelSchedule1.Caption := Schedule.GetWeek(CurrentWeek)
-      [0].ToString;
-    MainForm.LabelSchedule2.Caption := Schedule.GetWeek(CurrentWeek)
-      [1].ToString;
-    MainForm.LabelSchedule3.Caption := Schedule.GetWeek(CurrentWeek)
-      [2].ToString;
-    MainForm.LabelSchedule4.Caption := Schedule.GetWeek(CurrentWeek)
-      [3].ToString;
-    MainForm.LabelSchedule5.Caption := Schedule.GetWeek(CurrentWeek)
-      [4].ToString;
-    MainForm.LabelSchedule6.Caption := Schedule.GetWeek(CurrentWeek)
-      [5].ToString;
+    MainForm.PrintDay(Schedule.GetWeek(CurrentWeek)[DayIndex]);
+    CurrentSchedule := Schedule;
     SaveShedules(Schedules);
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 var
-    HttpClient: THttpClient;
-    Png: TPngObject;
+    I: Integer;
 begin
+    I := SearchList.Items.Count;
     if (SearchList.Items.IndexOf(SearchList.Text) <> -1) then
     begin
         if SearchList.Items.IndexOf(SearchList.Text) < GroupsIndex then
@@ -206,50 +228,65 @@ begin
 end;
 
 procedure TMainForm.Button3Click(Sender: TObject);
-var
-    fs: TFileStream;
 begin
-    fs := TFileStream.Create('1.png', fmCreate);
-    IdHTTP1.Get('http://img.yandex.net/i/www/logo.png', fs);
-    fs.Free;
-    Self.Image8.Picture.LoadFromFile('1.png');
+    dec(DayIndex);
+    if DayIndex < 0 then
+        DayIndex := 0;
+    PrintDay(CurrentSchedule.GetWeek(CurrentWeek)[DayIndex]);
 end;
 
 procedure TMainForm.Button4Click(Sender: TObject);
 var
     sch: TSchedule;
 begin
-    PrintSchedule(Schedules[SchedulesList.Items.IndexOf(SchedulesList.Text)]);
+    CurrentSchedule := Schedules
+      [SchedulesList.Items.IndexOf(SchedulesList.Text)];
+    PrintSchedule(CurrentSchedule);
+end;
+
+procedure TMainForm.Button5Click(Sender: TObject);
+begin
+    inc(DayIndex);
+    if DayIndex > High(CurrentSchedule.GetWeek(CurrentWeek)) then
+        DayIndex := 0;
+    PrintDay(CurrentSchedule.GetWeek(CurrentWeek)[DayIndex]);
 end;
 
 procedure WeekReady(Week: Byte);
 begin
     CurrentWeek := Week;
     MainForm.WeekNumberLabel.Caption := 'номер текущей недели: ' +
-      IntToStr(Week);
+      INtTOStr(Week);
+    SaveWeekIndexToFile(CurrentWeek);
+end;
+
+procedure TMainForm.FillComboBox(Tutors: TTutorsList; Groups: TGroupsList);
+var
+    I: Integer;
+begin
+    I := SearchList.Items.Count;
+    for I := 0 to Tutors.Count - 1 do
+        SearchList.Items.Add(Tutors[I].Fio);
+    for I := 0 to Groups.Count - 1 do
+        SearchList.Items.Add(Groups[I].Id);
+    I := SearchList.Items.Count;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
     I: Integer;
     NewImage: TImage;
-    NewLabel: TLabel;
-    NewPannel: TPanel;
-    Lines: TList<String>;
+
 begin
+    DayIndex := DayOfTheWeek(Date) - 1;
+    DayLabel.Caption := Days[DayIndex];
+    SubjectLabels := TList<TSubjectLabel>.Create;
+    ScheduleLabels := TList<TScheduleLabel>.Create;
+    // todo вынести чтение расписаний в парсер
     Schedules := LoadSchedules();
-    Lines := LoadTutors();
-    if Lines.Count <> 0 then
-        for I := 0 to Lines.Count - 1 do
-            SearchList.Items.Add(Lines[I]);
-    Lines := LoadGroups();
-    GroupsIndex := SearchList.Items.Count;
-    if Lines.Count <> 0 then
-        for I := 0 to Lines.Count - 1 do
-            SearchList.Items.Add(Lines[I]);
     for I := 0 to Schedules.Count - 1 do
         MainForm.SchedulesList.Items.Add(Schedules[I].Info);
-    Parser := MyTparser.Create(true);
+    Parser := MyTparser.Create(True);
     Parser.OnGroupsReady := DisplayGroups;
     Parser.OnTutorsReady := DisplayTutors;
     Parser.OnGroupScheduleReady := PrintSchedule;

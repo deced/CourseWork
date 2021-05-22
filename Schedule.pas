@@ -13,13 +13,15 @@ type
         FWeek: TWeek;
         FScheduleType: TScheduleType;
         FInfo: String;
+        FPhotoLink: string;
     public
         property Week: TWeek read FWeek write FWeek;
         property ScheduleType: TScheduleType read FScheduleType
           write FScheduleType;
         property Info: String read FInfo write FInfo;
+        property PhotoLink: String read FPhotoLink write FPhotoLink;
         constructor Create(Week: TWeek; ScheduleType: TScheduleType;
-          Info: String);
+          Info: String; PhotoLink: string);
         function GetWeek(WeekIndex: Byte): TWeek;
     end;
 
@@ -37,30 +39,34 @@ var
     I, J: Integer;
     Day: TDay;
     Subjects: TSubjects;
+    WeekName: String;
 begin
     for I := 0 to High(Week) do
     begin
         Subjects := TSubjects.Create();
         if Week[I] <> nil then
-            if Week[I].Subjects <> nil then
-                for J := 0 to Week[I].Subjects.count - 1 do
+        begin
+            WeekName := '';
+            for J := 0 to Week[I].Subjects.count - 1 do
+            begin
+                if ContainsInArray(Week[I].Subjects[J].Weeks, WeekIndex) then
                 begin
-                    if ContainsInArray(Week[I].Subjects[J].Weeks, WeekIndex)
-                    then
-                    begin
-                        Subjects.Add(Week[I].Subjects[J]);
-                    end;
+                    Subjects.Add(Week[I].Subjects[J]);
                 end;
-        Result[I] := TDay.Create(Subjects);
+            end;
+            WeekName := Week[I].Name;
+        end;
+        Result[I] := TDay.Create(Subjects, WeekName);
     end;
 end;
 
 constructor TSchedule.Create(Week: TWeek; ScheduleType: TScheduleType;
-  Info: String);
+  Info: String; PhotoLink: string);
 begin
     self.Week := Week;
     self.ScheduleType := ScheduleType;
     self.Info := Info;
+    self.PhotoLink := PhotoLink;
 end;
 
 end.

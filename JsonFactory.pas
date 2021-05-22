@@ -9,8 +9,8 @@ uses CustomTypes, Group, Tutor, Schedule, System.JSON,
 type
     TJsonFactory = class
     public
-        class function GetGroups(JSON: String): TGroupsArray;
-        class function GetTutors(JSON: String): TTutorsArray;
+        class function GetGroups(JSON: String): TGroupsList;
+        class function GetTutors(JSON: String): TTutorsList;
         class function GetGroupShedule(JSON: String): TSchedule;
         class function GetTutorSchedule(JSON: String): TSchedule;
     private
@@ -54,7 +54,7 @@ end;
 class function TJsonFactory.GetSubject(SubjectJSON: TJSONObject): TSubject;
 var
     Weeks: TWeekNums;
-    StartTime, EndTime, SubjectName, Auditory, SubjectType: String;
+    StartTime, EndTime, SubjectName, Auditory, SubjectType, Group: String;
     Tutor: TTutor;
 begin
     with SubjectJSON do
@@ -62,6 +62,10 @@ begin
         StartTime := FindValue('startLessonTime').Value;
         EndTime := FindValue('endLessonTime').Value;
         SubjectName := FindValue('subject').Value;
+        if (FindValue('auditory') as TJSONArray).Count > 0 then
+            Group := (FindValue('studentGroup') as TJSONArray).Items[0].Value
+        else
+            Group := '';
         if (FindValue('auditory') as TJSONArray).Count > 0 then
             Auditory := (FindValue('auditory') as TJSONArray).Items[0].Value
         else
@@ -76,7 +80,7 @@ begin
         Weeks := GetWeekNums(FindValue('weekNumber') as TJSONArray);
         SubjectType := FindValue('lessonType').Value;
         Result := TSubject.Create(StartTime, EndTime, SubjectName, Tutor,
-          Auditory, SubjectType, Weeks);
+          Auditory, SubjectType, Group, Weeks);
     end;
 end;
 
@@ -120,17 +124,20 @@ begin
             Subject := GetSubject(JSONSubjectsArray.Items[J] as TJSONObject);
             Subjects.Add(Subject);
         end;
-        Result[WeekIndex] := TDay.Create(Subjects);
+        Result[WeekIndex] := TDay.Create(Subjects, DayName);
     end;
 end;
 
 class function TJsonFactory.GetTutorSchedule(JSON: string): TSchedule;
 var
-    Info: String;
+    Info, PhotoLink: String;
 begin
-    Info := TJSONObject.ParseJSONValue(JSON).FindValue('employee').FindValue('fio').Value;
+    Info := TJSONObject.ParseJSONValue(JSON).FindValue('employee')
+      .FindValue('fio').Value;
+    PhotoLink := TJSONObject.ParseJSONValue(JSON).FindValue('employee')
+      .FindValue('photoLink').Value;
     Result := TSchedule.Create(GetWeek(JSON),
-      TScheduleType.TutorSchedule, Info);
+      TScheduleType.TutorSchedule, Info,PhotoLink);
 end;
 
 class function TJsonFactory.GetGroupShedule(JSON: String): TSchedule;
@@ -140,44 +147,44 @@ begin
     Info := TJSONObject.ParseJSONValue(JSON).FindValue('studentGroup')
       .FindValue('name').Value;
     Result := TSchedule.Create(GetWeek(JSON),
-      TScheduleType.GroupSchedule, Info);
+      TScheduleType.GroupSchedule, Info,'');
 end;
 
-class function TJsonFactory.GetTutors(JSON: String): TTutorsArray;
+class function TJsonFactory.GetTutors(JSON: String): TTutorsList;
 var
     JSONArray: TJSONArray;
     I: Integer;
 begin
     JSONArray := TJSONObject.ParseJSONValue(JSON) as TJSONArray;
-    SetLength(Result, JSONArray.Count);
-    for I := 0 to High(Result) do
+    Result := TTutorsList.Create;
+    for I := 0 to JSONArray.Count - 1 do
     begin
         with JSONArray do
         begin
-            Result[I] := TTutor.Create(Items[I].FindValue('firstName').Value,
+            Result.Add(TTutor.Create(Items[I].FindValue('firstName').Value,
               Items[I].FindValue('lastName').Value,
               Items[I].FindValue('middleName').Value,
               Items[I].FindValue('photoLink').Value, Items[I].FindValue('fio')
-              .Value, Items[I].FindValue('id').Value);
+              .Value, Items[I].FindValue('id').Value));
         end;
     end;
 end;
 
-class function TJsonFactory.GetGroups(JSON: String): TGroupsArray;
+class function TJsonFactory.GetGroups(JSON: String): TGroupsList;
 var
     JSONArray: TJSONArray;
     I: Integer;
     Course: Byte;
 begin
     JSONArray := TJSONObject.ParseJSONValue(JSON) as TJSONArray;
-    SetLength(Result, JSONArray.Count);
-    for I := 0 to High(Result) do
+    Result := TGroupsList.Create;
+    for I := 0 to JSONArray.Count - 1 do
     begin
         if not JSONArray.Items[I].FindValue('course').TryGetValue<Byte>(Course)
         then
             Course := 0;
-        Result[I] := TGroup.Create(JSONArray.Items[I].FindValue('name')
-          .Value, Course);
+        Result.Add(TGroup.Create(JSONArray.Items[I].FindValue('name')
+          .Value, Course));
     end;
 end;
 

@@ -1,5 +1,7 @@
 program ÑourseWork;
 
+
+
 uses
   Vcl.Forms,
   Main in 'Main.pas' {MainForm},
@@ -11,7 +13,11 @@ uses
   JsonFactory in 'JsonFactory.pas',
   Tutor in 'Tutor.pas',
   CustomTypes in 'CustomTypes.pas',
-  IO in 'IO.pas';
+  IO in 'IO.pas',
+  ShowSubject in 'ShowSubject.pas' {ShowSubjectForm},
+  SubjectLabel in 'SubjectLabel.pas',
+  ImageParser in 'ImageParser.pas',
+  ScheduleLabel in 'ScheduleLabel.pas';
 
 {$R *.res}
 
@@ -19,6 +25,7 @@ begin
     Application.Initialize;
     Application.MainFormOnTaskbar := True;
     Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TShowSubjectForm, ShowSubjectForm);
   Application.Run;
 
 end.

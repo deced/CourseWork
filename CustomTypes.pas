@@ -2,13 +2,13 @@ unit CustomTypes;
 
 interface
 
-uses Group, Tutor, Day, Schedule;
+uses Group, Tutor, Day, Schedule, Generics.Collections, System.Classes;
 
 type
-    TGroupsArray = Array of TGroup;
-    TTutorsArray = array of TTutor;
-    TGroupsParsedEvent = procedure(Result: TGroupsArray);
-    TTutorsParsedEvent = procedure(Result: TTutorsArray);
+    TGroupsList = TList<TGroup>;
+    TTutorsList = TList<TTutor>;
+    TGroupsParsedEvent = procedure(Result: TGroupsList);
+    TTutorsParsedEvent = procedure(Result: TTutorsList);
     TGroupSheduleParsedEvent = procedure(Result: TSchedule);
     TTutorScheduleParsedEvent = procedure(Result: TSchedule);
     TWeekParsed = procedure(Result: Byte);
