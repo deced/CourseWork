@@ -14,14 +14,16 @@ type
         FScheduleType: TScheduleType;
         FInfo: String;
         FPhotoLink: string;
+        FEndDate: TDateTime;
     public
         property Week: TWeek read FWeek write FWeek;
         property ScheduleType: TScheduleType read FScheduleType
           write FScheduleType;
         property Info: String read FInfo write FInfo;
         property PhotoLink: String read FPhotoLink write FPhotoLink;
+        property EndDate: TDateTime read FEndDate write FEndDate;
         constructor Create(Week: TWeek; ScheduleType: TScheduleType;
-          Info: String; PhotoLink: string);
+          Info, PhotoLink: string; EndDate: TDateTime);
         function GetWeek(WeekIndex: Byte): TWeek;
     end;
 
@@ -61,12 +63,13 @@ begin
 end;
 
 constructor TSchedule.Create(Week: TWeek; ScheduleType: TScheduleType;
-  Info: String; PhotoLink: string);
+  Info, PhotoLink: string; EndDate: TDateTime);
 begin
     self.Week := Week;
     self.ScheduleType := ScheduleType;
     self.Info := Info;
     self.PhotoLink := PhotoLink;
+    self.EndDate := EndDate;
 end;
 
 end.

@@ -5,7 +5,7 @@ interface
 uses Group, Tutor, Day, Schedule, Generics.Collections, System.Classes;
 
 const
-    ScheduleItemHeight = 100;
+    ScheduleItemHeight = 80;
     SubjectItemGeight = 60;
     ScrollStep = 40;
     DefaultGroupPicture = 'res\Group.bmp';

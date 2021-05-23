@@ -1,13 +1,4 @@
-﻿[Button2]
-Coordinates=227,144,59,58
-
-[Button3]
-Coordinates=359,144,59,58
-
-[Button5]
-Coordinates=10,144,59,58
-
-[N1]
+﻿[N1]
 Coordinates=12,143,40,36
 
 [DayLabel]
@@ -25,4 +16,13 @@ Coordinates=366,78,74,36
 
 []
 Coordinates=121,10,101,124
+
+[PrevButton]
+Coordinates=359,144,59,58
+
+[NextButton]
+Coordinates=10,144,59,58
+
+[AddScheduleButton]
+Coordinates=227,144,59,58
 

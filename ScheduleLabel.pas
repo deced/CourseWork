@@ -4,13 +4,14 @@ interface
 
 uses Vcl.StdCtrls, SysUtils, Vcl.Controls, Schedule, Vcl.Graphics, Vcl.ExtCtrls,
     System.Types, Windows, Vcl.Menus, ImageParser, System.Classes, CustomTypes,
-    Vcl.Forms;
+    Vcl.Forms, Generics.Collections;
 
 type
     TScheduleLabel = class
         ScheduleInfo: TLabel;
         Image: TImage;
         Bevel: TBevel;
+        PopUpMenu: TPopupMenu;
         constructor Create(Parent: TWinControl; Y: Integer);
         procedure Clear();
         procedure SetLocation(Y: Integer);
@@ -22,9 +23,13 @@ type
         procedure ConfigureBevel(Parent: TWinControl);
         procedure ConfigureLabel(Parent: TWinControl);
         procedure ConfigureImage();
+        procedure ConfigurePopupMenu();
         procedure SetVisibility(Value: Boolean);
         procedure DisplayImage(MS: TMemoryStream);
     end;
+
+procedure SetScheduleFocus(ScheduleLabels: TList<TScheduleLabel>;
+  Index: Integer);
 
 implementation
 
@@ -47,6 +52,7 @@ procedure TScheduleLabel.CreateControls(Parent: TWinControl);
 begin
     Image := TImage.Create(Parent);
     Bevel := TBevel.Create(Parent);
+    PopUpMenu := TPopupMenu.Create(Parent);
     ScheduleInfo := TLabel.Create(Parent);
 end;
 
@@ -89,7 +95,7 @@ begin
     if Schedule.ScheduleType = TScheduleType.TutorSchedule then
         ScheduleInfo.Caption := Schedule.Info
     else
-        ScheduleInfo.Caption := 'Группа ' + #13#10 + Schedule.Info;
+        ScheduleInfo.Caption := 'Группа ' + Schedule.Info;
 
 end;
 
@@ -109,11 +115,12 @@ end;
 procedure TScheduleLabel.ConfigureLabel(Parent: TWinControl);
 begin
     ScheduleInfo.AutoSize := false;
-    ScheduleInfo.Width := Parent.Width-ScheduleItemHeight-10;
+    ScheduleInfo.Width := Parent.Width - ScheduleItemHeight - 10;
     ScheduleInfo.Height := ScheduleItemHeight;
     ScheduleInfo.Font.Size := 16;
     ScheduleInfo.WordWrap := true;
     ScheduleInfo.Cursor := crHandPoint;
+    ScheduleInfo.PopUpMenu := PopUpMenu;
 end;
 
 procedure TScheduleLabel.ConfigureImage();
@@ -124,15 +131,35 @@ begin
     Image.Cursor := crHandPoint;
 end;
 
+procedure TScheduleLabel.ConfigurePopupMenu();
+var
+    MenuItemDelete: TMenuItem;
+begin
+    MenuItemDelete := TMenuItem.Create(PopUpMenu);
+    MenuItemDelete.Caption := 'Удалить';
+    PopUpMenu.Items.Add(MenuItemDelete);
+end;
+
 constructor TScheduleLabel.Create(Parent: TWinControl; Y: Integer);
 begin
     CreateControls(Parent);
     SetParent(Parent);
     ConfigureBevel(Parent);
+    ConfigurePopupMenu();
     ConfigureLabel(Parent);
     ConfigureImage();
     SetLocation(Y);
 
+end;
+
+procedure SetScheduleFocus(ScheduleLabels: TList<TScheduleLabel>;
+  Index: Integer);
+var
+    I: Integer;
+begin
+    for I := 0 to ScheduleLabels.Count - 1 do
+        ScheduleLabels[I].Focus(false);
+    ScheduleLabels[Index].Focus(true);
 end;
 
 end.
