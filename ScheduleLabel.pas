@@ -15,6 +15,7 @@ type
         procedure Clear();
         procedure SetLocation(Y: Integer);
         procedure SetText(Schedule: TSchedule);
+        procedure Focus(Value: Boolean);
     private
         procedure CreateControls(Parent: TWinControl);
         procedure SetParent(Parent: TWinControl);
@@ -26,6 +27,14 @@ type
     end;
 
 implementation
+
+procedure TScheduleLabel.Focus(Value: Boolean);
+begin
+    if Value then
+        ScheduleInfo.Font.Style := [fsBold]
+    else
+        ScheduleInfo.Font.Style := [];
+end;
 
 procedure TScheduleLabel.SetVisibility(Value: Boolean);
 begin
@@ -56,10 +65,12 @@ procedure TScheduleLabel.Clear();
 begin
     SetVisibility(false);
 end;
+
 procedure TScheduleLabel.DisplayImage(MS: TMemoryStream);
 begin
-     Image.Picture.LoadFromStream(MS);
+    Image.Picture.LoadFromStream(MS);
 end;
+
 procedure TScheduleLabel.SetText(Schedule: TSchedule);
 var
     ImgParser: TImageParser;
@@ -71,7 +82,7 @@ begin
         ImgParser.LoadImage(Schedule.PhotoLink)
     else if Schedule.ScheduleType = TScheduleType.GroupSchedule then
         ImgParser.LoadImage(ExtractFilePath(Application.ExeName) +
-         DefaultGroupPicture)
+          DefaultGroupPicture)
     else
         ImgParser.LoadImage(ExtractFilePath(Application.ExeName) +
           DefaultTutorPicture);
@@ -98,7 +109,7 @@ end;
 procedure TScheduleLabel.ConfigureLabel(Parent: TWinControl);
 begin
     ScheduleInfo.AutoSize := false;
-    ScheduleInfo.Width := Parent.Width;
+    ScheduleInfo.Width := Parent.Width-ScheduleItemHeight-10;
     ScheduleInfo.Height := ScheduleItemHeight;
     ScheduleInfo.Font.Size := 16;
     ScheduleInfo.WordWrap := true;

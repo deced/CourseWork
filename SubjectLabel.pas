@@ -7,7 +7,7 @@ uses Vcl.StdCtrls, Vcl.Controls, Subject, Vcl.Graphics, Vcl.ExtCtrls,
 
 type
     TSubjectLabel = class
-        SubjectName, Auditory, TimeStart, TimeEnd, Tutor, Group, Note,
+        SubjectName, Auditory, TimeStart, TimeEnd, Group, Note,
           SubGroup: TLabel;
         Bevel: TBevel;
         PopUpMenu: TPopupMenu;
@@ -37,7 +37,6 @@ begin
     Auditory.Visible := Value;
     TimeStart.Visible := Value;
     TimeEnd.Visible := Value;
-    Tutor.Visible := Value;
     Group.Visible := Value;
     SubjectColor.Visible := Value;
     Bevel.Visible := Value;
@@ -64,8 +63,6 @@ begin
         Group.Left := SubjectName.Left + SubjectName.Width + 10;
         SubGroup.Left := Group.Left;
     end;
-    if Tutor.Left - (Group.Left + Group.Width) < 10 then
-        Tutor.Left := Group.Left + Group.Width + 10;
     if (Note.Caption <> '') and (SubGroup.Caption <> '') then
     begin
         Note.Left := SubGroup.Left + SubGroup.Width + 10;
@@ -81,7 +78,6 @@ begin
     Auditory.Caption := Subject.Auditory;
     TimeStart.Caption := Subject.StartTime;
     TimeEnd.Caption := Subject.EndTime;
-    Tutor.Caption := Subject.Tutor.Fio;
     Group.Caption := Subject.Group;
     Note.Caption := Subject.Note;
     if Subject.SubGroup <> '' then
@@ -109,8 +105,6 @@ begin
     TimeStart.Top := Y;
     TimeEnd.Left := 0;
     TimeEnd.Top := Y + 30;
-    Tutor.Left := 300;
-    Tutor.Top := Y;
     SubjectColor.Top := Y + 5;
     SubjectColor.Left := 70;
     Bevel.Left := 0;
@@ -126,7 +120,6 @@ begin
     SubjectName.Font.Size := 16;
     Auditory.Font.Size := 16;
     TimeEnd.Font.Size := 16;
-    Tutor.Font.Size := 16;
     Group.Font.Size := 16;
     TimeStart.Font.Size := 16;
     Note.Font.Size := 16;
@@ -141,7 +134,6 @@ begin
     SubjectName.Parent := Parent;
     Auditory.Parent := Parent;
     TimeEnd.Parent := Parent;
-    Tutor.Parent := Parent;
     SubjectColor.Parent := Parent;
     Group.Parent := Parent;
     TimeStart.Parent := Parent;
@@ -157,7 +149,6 @@ begin
     SubjectName := TLabel.Create(Parent);
     Auditory := TLabel.Create(Parent);
     TimeEnd := TLabel.Create(Parent);
-    Tutor := TLabel.Create(Parent);
     Group := TLabel.Create(Parent);
     SubjectColor := TImage.Create(Parent);
 end;

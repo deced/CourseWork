@@ -120,7 +120,7 @@ object MainForm: TMainForm
   object SchedulesScrollBox: TScrollBox
     Left = 20
     Top = 144
-    Width = 309
+    Width = 317
     Height = 477
     HorzScrollBar.Visible = False
     VertScrollBar.Smooth = True
@@ -128,6 +128,8 @@ object MainForm: TMainForm
     BevelInner = bvNone
     BevelOuter = bvNone
     TabOrder = 4
+    OnMouseWheelDown = SchedulesScrollBoxMouseWheelDown
+    OnMouseWheelUp = SchedulesScrollBoxMouseWheelUp
   end
   object SearchList: TComboBox
     Left = 20
