@@ -2,33 +2,34 @@ unit ImageParser;
 
 interface
 
-uses System.Classes, CustomTypes, IdHttp, SysUtils, Vcl.ExtCtrls;
+uses System.Classes, CustomTypes, IdHttp, SysUtils, Vcl.ExtCtrls, Vcl.Forms;
 
 type
     TImageParser = class(TThread)
         Url: String;
-        ImageToLoad: TImage;
-        procedure LoadImage(Path: String; Image: TImage);
+        OnImageParsed: TImageParsedEvent;
+        procedure LoadImage(Path: String);
     private
         procedure Execute; override;
     end;
 
 implementation
 
-procedure TImageParser.LoadImage(Path: String; Image: TImage);
+procedure TImageParser.LoadImage(Path: String);
 begin
     Url := Path;
-    ImageToLoad := Image;
     Self.Start;
+end;
+
+function IsResFile(Path: String): Boolean;
+begin
+    Result := FileExists(Path);
 end;
 
 function FileAlreadyExists(Link: String): Boolean;
 begin
-    if FileExists(ExtractFileName(Link.Replace('/', '\') + '.jpg')) or
-      FileExists(ExtractFileName(Link.Replace('/', '\') + '.png')) then
-        Result := true
-    else
-        Result := false;
+    Result := FileExists(ExtractFileName(Link.Replace('/', '\') + '.jpg')) or
+      FileExists(ExtractFileName(Link.Replace('/', '\') + '.png'));
 end;
 
 function GetFilePath(Link: String): String;
@@ -49,38 +50,39 @@ begin
     if LOl = $D8FF then
         Result := '.jpg'
     else if LOl = $5089 then
-        Result := '.png'
-    else
-        Result := 'блять я хуй знает что за оно';
+        Result := '.png';
 end;
 
 procedure TImageParser.Execute;
 var
     MS: TMemoryStream;
     IdHttp: TIdHTTP;
-    str: String;
 begin
-    if FileAlreadyExists(Url) then
+    MS := TMemoryStream.Create;
+    if IsResFile(Url) then
+        MS.LoadFromFile(Url)
+    else if FileAlreadyExists(Url) then
     begin
-        ImageToLoad.Picture.LoadFromFile(GetFilePath(Url));
+        MS.LoadFromFile(GetFilePath(Url));
     end
     else
     begin
         IdHttp := TIdHTTP.Create(nil);
+        MS.LoadFromFile(ExtractFilePath(Application.ExeName) +
+          DefaultTutorPicture);
         MS := TMemoryStream.Create;
         try
             IdHttp.get(Url, MS);
-            str := GetFileExt(MS);
             MS.seek(0, soFromBeginning);
-            ImageToLoad.Picture.LoadFromStream(MS);
-            ImageToLoad.Picture.SaveToFile
-              (ExtractFileName(Url.Replace('/', '\') ) +
+            MS.LoadFromStream(MS);
+            MS.SaveToFile(ExtractFileName(Url.Replace('/', '\')) +
               GetFileExt(MS));
-        finally
-
+        except
+            MS.LoadFromFile(ExtractFilePath(Application.ExeName) +
+              DefaultTutorPicture);
         end;
     end;
-
+    OnImageParsed(MS);
 end;
 
 end.

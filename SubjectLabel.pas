@@ -7,7 +7,8 @@ uses Vcl.StdCtrls, Vcl.Controls, Subject, Vcl.Graphics, Vcl.ExtCtrls,
 
 type
     TSubjectLabel = class
-        SubjectName, Auditory, TimeStart, TimeEnd, Tutor, Group: TLabel;
+        SubjectName, Auditory, TimeStart, TimeEnd, Tutor, Group, Note,
+          SubGroup: TLabel;
         Bevel: TBevel;
         PopUpMenu: TPopupMenu;
         SubjectColor: TImage;
@@ -25,6 +26,7 @@ type
         procedure ConfigureTimeLabels(Parent: TWinControl);
         procedure SetSubjectColor(Subject: TSubject);
         procedure SetVisibility(Value: Boolean);
+        procedure CorrectLocation();
     end;
 
 implementation
@@ -39,6 +41,8 @@ begin
     Group.Visible := Value;
     SubjectColor.Visible := Value;
     Bevel.Visible := Value;
+    Note.Visible := Value;
+    SubGroup.Visible := Value;
 end;
 
 procedure TSubjectLabel.SetSubjectColor(Subject: TSubject);
@@ -53,6 +57,21 @@ begin
     SubjectColor.Visible := true;
 end;
 
+procedure TSubjectLabel.CorrectLocation();
+begin
+    if Group.Left - (SubjectName.Left + SubjectName.Width) < 10 then
+    begin
+        Group.Left := SubjectName.Left + SubjectName.Width + 10;
+        SubGroup.Left := Group.Left;
+    end;
+    if Tutor.Left - (Group.Left + Group.Width) < 10 then
+        Tutor.Left := Group.Left + Group.Width + 10;
+    if (Note.Caption <> '') and (SubGroup.Caption <> '') then
+    begin
+        Note.Left := SubGroup.Left + SubGroup.Width + 10;
+    end;
+end;
+
 procedure TSubjectLabel.SetText(Subject: TSubject);
 begin
     SetVisibility(true);
@@ -64,6 +83,12 @@ begin
     TimeEnd.Caption := Subject.EndTime;
     Tutor.Caption := Subject.Tutor.Fio;
     Group.Caption := Subject.Group;
+    Note.Caption := Subject.Note;
+    if Subject.SubGroup <> '' then
+        SubGroup.Caption := 'Подгр. ' + Subject.SubGroup
+    else
+        SubGroup.Caption := '';
+    CorrectLocation();
 end;
 
 procedure TSubjectLabel.Clear();
@@ -75,20 +100,25 @@ procedure TSubjectLabel.SetLocation(Y: Integer);
 begin
     SubjectName.Left := 90;
     SubjectName.Top := Y;
+    Group.Left := 220;
+    Group.Top := Y;
+
     Auditory.Left := 90;
     Auditory.Top := Y + 30;
     TimeStart.Left := 0;
     TimeStart.Top := Y;
     TimeEnd.Left := 0;
     TimeEnd.Top := Y + 30;
-    Tutor.Left := 240;
-    Tutor.Top := Y + 30;
+    Tutor.Left := 300;
+    Tutor.Top := Y;
     SubjectColor.Top := Y + 5;
     SubjectColor.Left := 70;
     Bevel.Left := 0;
     Bevel.Top := Y;
-    Group.Left := 240;
-    Group.Top := Y;
+    Note.Top := Y + 30;
+    SubGroup.Top := Y + 30;
+    Note.Left := 220;
+    SubGroup.Left := 220;
 end;
 
 procedure TSubjectLabel.SetFontSize();
@@ -99,22 +129,28 @@ begin
     Tutor.Font.Size := 16;
     Group.Font.Size := 16;
     TimeStart.Font.Size := 16;
+    Note.Font.Size := 16;
+    SubGroup.Font.Size := 16;
 end;
 
 procedure TSubjectLabel.SetParent(Parent: TWinControl);
 begin
+    SubGroup.Parent := Parent;
+    Note.Parent := Parent;
     Bevel.Parent := Parent;
     SubjectName.Parent := Parent;
     Auditory.Parent := Parent;
     TimeEnd.Parent := Parent;
     Tutor.Parent := Parent;
     SubjectColor.Parent := Parent;
-    TimeStart.Parent := Parent;
     Group.Parent := Parent;
+    TimeStart.Parent := Parent;
 end;
 
 procedure TSubjectLabel.CreateControls(Parent: TWinControl);
 begin
+    SubGroup := TLabel.Create(Parent);
+    Note := TLabel.Create(Parent);
     TimeStart := TLabel.Create(Parent);
     PopUpMenu := TPopupMenu.Create(Parent);
     Bevel := TBevel.Create(Parent);

@@ -6,7 +6,7 @@ uses Day, System.Generics.Collections, Subject;
 
 type
     TScheduleType = (TutorSchedule, GroupSchedule);
-    TWeek = array [0 .. 5] of TDay;
+    TWeek = array [0 .. 6] of TDay;
 
     TSchedule = class
     private

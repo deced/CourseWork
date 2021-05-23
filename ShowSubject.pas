@@ -35,6 +35,7 @@ type
         Subject: TSubject;
         procedure LoadSubject(Subject: TSubject);
         procedure LoadSubjectForEditind(Subject: TSubject);
+        procedure DisplayImage(MS: TMemoryStream);
     end;
 
 var
@@ -47,6 +48,11 @@ implementation
 procedure LoadImage(MS: TMemoryStream);
 begin
     ShowSubjectForm.Image1.Picture.LoadFromStream(MS);
+end;
+
+procedure TShowSubjectForm.DisplayImage(MS: TMemoryStream);
+begin
+     Image1.Picture.LoadFromStream(Ms);
 end;
 
 procedure TShowSubjectForm.LoadSubjectForEditind(Subject: TSubject);
@@ -90,7 +96,8 @@ begin
     if Subject.Tutor.PhotoLink <> '' then
     begin
         ImageParser := TImageParser.create(true);
-        ImageParser.LoadImage(Subject.Tutor.PhotoLink, Image1);
+        ImageParser.OnImageParsed :=DisplayImage;
+        ImageParser.LoadImage(Subject.Tutor.PhotoLink);
     end;
 end;
 

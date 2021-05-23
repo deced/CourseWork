@@ -2,8 +2,9 @@ unit ScheduleLabel;
 
 interface
 
-uses Vcl.StdCtrls, Vcl.Controls, Schedule, Vcl.Graphics, Vcl.ExtCtrls,
-    System.Types, Windows, Vcl.Menus, ImageParser, System.Classes, CustomTypes;
+uses Vcl.StdCtrls, SysUtils, Vcl.Controls, Schedule, Vcl.Graphics, Vcl.ExtCtrls,
+    System.Types, Windows, Vcl.Menus, ImageParser, System.Classes, CustomTypes,
+    Vcl.Forms;
 
 type
     TScheduleLabel = class
@@ -21,6 +22,7 @@ type
         procedure ConfigureLabel(Parent: TWinControl);
         procedure ConfigureImage();
         procedure SetVisibility(Value: Boolean);
+        procedure DisplayImage(MS: TMemoryStream);
     end;
 
 implementation
@@ -54,17 +56,25 @@ procedure TScheduleLabel.Clear();
 begin
     SetVisibility(false);
 end;
-
+procedure TScheduleLabel.DisplayImage(MS: TMemoryStream);
+begin
+     Image.Picture.LoadFromStream(MS);
+end;
 procedure TScheduleLabel.SetText(Schedule: TSchedule);
 var
     ImgParser: TImageParser;
 begin
     SetVisibility(true);
+    ImgParser := TImageParser.Create(true);
+    ImgParser.OnImageParsed := DisplayImage;
     if Schedule.PhotoLink <> '' then
-    begin
-        ImgParser := TImageParser.Create(true);
-        ImgParser.LoadImage(Schedule.PhotoLink, Image);
-    end;
+        ImgParser.LoadImage(Schedule.PhotoLink)
+    else if Schedule.ScheduleType = TScheduleType.GroupSchedule then
+        ImgParser.LoadImage(ExtractFilePath(Application.ExeName) +
+         DefaultGroupPicture)
+    else
+        ImgParser.LoadImage(ExtractFilePath(Application.ExeName) +
+          DefaultTutorPicture);
     if Schedule.ScheduleType = TScheduleType.TutorSchedule then
         ScheduleInfo.Caption := Schedule.Info
     else
@@ -100,6 +110,7 @@ begin
     Image.Height := ScheduleItemHeight - 4;
     Image.Width := ScheduleItemHeight - 4;
     Image.Stretch := true;
+    Image.Cursor := crHandPoint;
 end;
 
 constructor TScheduleLabel.Create(Parent: TWinControl; Y: Integer);

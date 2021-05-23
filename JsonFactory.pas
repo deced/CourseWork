@@ -54,7 +54,8 @@ end;
 class function TJsonFactory.GetSubject(SubjectJSON: TJSONObject): TSubject;
 var
     Weeks: TWeekNums;
-    StartTime, EndTime, SubjectName, Auditory, SubjectType, Group: String;
+    StartTime, EndTime, SubjectName, Auditory, SubjectType, Note, Group,
+      SubGroup: String;
     Tutor: TTutor;
 begin
     with SubjectJSON do
@@ -79,8 +80,14 @@ begin
         end;
         Weeks := GetWeekNums(FindValue('weekNumber') as TJSONArray);
         SubjectType := FindValue('lessonType').Value;
-        Result := TSubject.Create(StartTime, EndTime, SubjectName, Tutor,
-          Auditory, SubjectType, Group, Weeks);
+        SubGroup := FindValue('numSubgroup').Value;
+        if SubGroup = '0' then
+              SubGroup := '';
+        Note := FindValue('note').Value;
+        if Note = 'null' then
+            Note := '';
+        Result := TSubject.Create(StartTime, EndTime, SubjectName, Auditory,
+          SubjectType, Group, Note, SubGroup, Weeks, Tutor);
     end;
 end;
 
@@ -136,8 +143,8 @@ begin
       .FindValue('fio').Value;
     PhotoLink := TJSONObject.ParseJSONValue(JSON).FindValue('employee')
       .FindValue('photoLink').Value;
-    Result := TSchedule.Create(GetWeek(JSON),
-      TScheduleType.TutorSchedule, Info,PhotoLink);
+    Result := TSchedule.Create(GetWeek(JSON), TScheduleType.TutorSchedule, Info,
+      PhotoLink);
 end;
 
 class function TJsonFactory.GetGroupShedule(JSON: String): TSchedule;
@@ -146,8 +153,8 @@ var
 begin
     Info := TJSONObject.ParseJSONValue(JSON).FindValue('studentGroup')
       .FindValue('name').Value;
-    Result := TSchedule.Create(GetWeek(JSON),
-      TScheduleType.GroupSchedule, Info,'');
+    Result := TSchedule.Create(GetWeek(JSON), TScheduleType.GroupSchedule,
+      Info, '');
 end;
 
 class function TJsonFactory.GetTutors(JSON: String): TTutorsList;

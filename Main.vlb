@@ -1,15 +1,6 @@
 ﻿[Button2]
 Coordinates=227,144,59,58
 
-[SearchList]
-Coordinates=121,10,101,124
-
-[Label2]
-Coordinates=296,144,53,58
-
-[WeekNumberLabel]
-Coordinates=295,10,124,58
-
 [Button3]
 Coordinates=359,144,59,58
 
@@ -33,5 +24,5 @@ Coordinates=10,212,69,36
 Coordinates=366,78,74,36
 
 []
-Coordinates=158,144,59,58
+Coordinates=121,10,101,124
 
