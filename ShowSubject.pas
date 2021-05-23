@@ -28,7 +28,12 @@ type
         AuditoryEdit: TEdit;
         SaveButton: TButton;
         CancelButton: TButton;
+        NoteEdit: TEdit;
+        Label7: TLabel;
+        SubGroupEdit: TEdit;
+        Label8: TLabel;
         procedure SaveButtonClick(Sender: TObject);
+        procedure CancelButtonClick(Sender: TObject);
     private
         { Private declarations }
     public
@@ -50,9 +55,14 @@ begin
     ShowSubjectForm.Image1.Picture.LoadFromStream(MS);
 end;
 
+procedure TShowSubjectForm.CancelButtonClick(Sender: TObject);
+begin
+    ModalResult := mrCancel;
+end;
+
 procedure TShowSubjectForm.DisplayImage(MS: TMemoryStream);
 begin
-     Image1.Picture.LoadFromStream(Ms);
+    Image1.Picture.LoadFromStream(MS);
 end;
 
 procedure TShowSubjectForm.LoadSubjectForEditind(Subject: TSubject);
@@ -64,6 +74,8 @@ begin
     EndTimeEdit.Enabled := true;
     GroupEdit.Enabled := true;
     AuditoryEdit.Enabled := true;
+    NoteEdit.Enabled := true;
+    SubGroupEdit.Enabled := true;
     SaveButton.Visible := true;
     CancelButton.Visible := true;
     LoadSubject(Subject);
@@ -78,6 +90,8 @@ begin
     Subject.EndTime := EndTimeEdit.Text;
     Subject.Group := GroupEdit.Text;
     Subject.Auditory := AuditoryEdit.Text;
+    Subject.Note := NoteEdit.Text;
+    Subject.SubGroup := SubGroupEdit.Text;
     ModalResult := mrYes;
 end;
 
@@ -93,10 +107,12 @@ begin
       + ' ' + Subject.Tutor.MiddleName;
     GroupEdit.Text := Subject.Group;
     AuditoryEdit.Text := Subject.Auditory;
+    NoteEdit.Text := Subject.Note;
+    SubGroupEdit.Text := Subject.SubGroup;
     if Subject.Tutor.PhotoLink <> '' then
     begin
         ImageParser := TImageParser.create(true);
-        ImageParser.OnImageParsed :=DisplayImage;
+        ImageParser.OnImageParsed := DisplayImage;
         ImageParser.LoadImage(Subject.Tutor.PhotoLink);
     end;
 end;
