@@ -20,10 +20,17 @@ type
         procedure ConfigureBevel(Parent: TWinControl);
         procedure ConfigureLabel(Parent: TWinControl);
         procedure ConfigureImage();
-
+        procedure SetVisibility(Value: Boolean);
     end;
 
 implementation
+
+procedure TScheduleLabel.SetVisibility(Value: Boolean);
+begin
+    Image.Visible := Value;
+    ScheduleInfo.Visible := Value;
+    Bevel.Visible := Value;
+end;
 
 procedure TScheduleLabel.CreateControls(Parent: TWinControl);
 begin
@@ -34,7 +41,7 @@ end;
 
 procedure TScheduleLabel.SetLocation(Y: Integer);
 begin
-    Image.Top := Y+2;
+    Image.Top := Y + 2;
     Image.Left := 2;
     Bevel.Top := Y;
     Bevel.Left := 0;
@@ -45,15 +52,14 @@ end;
 
 procedure TScheduleLabel.Clear();
 begin
-    Image.Visible := false;
-    ScheduleInfo.Visible := false;
-    Bevel.Visible := false;
+    SetVisibility(false);
 end;
 
 procedure TScheduleLabel.SetText(Schedule: TSchedule);
 var
     ImgParser: TImageParser;
 begin
+    SetVisibility(true);
     if Schedule.PhotoLink <> '' then
     begin
         ImgParser := TImageParser.Create(true);
@@ -86,12 +92,13 @@ begin
     ScheduleInfo.Height := ScheduleItemHeight;
     ScheduleInfo.Font.Size := 16;
     ScheduleInfo.WordWrap := true;
+    ScheduleInfo.Cursor := crHandPoint;
 end;
 
 procedure TScheduleLabel.ConfigureImage();
 begin
-    Image.Height := ScheduleItemHeight-4;
-    Image.Width := ScheduleItemHeight-4;
+    Image.Height := ScheduleItemHeight - 4;
+    Image.Width := ScheduleItemHeight - 4;
     Image.Stretch := true;
 end;
 

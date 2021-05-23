@@ -11,6 +11,7 @@ object ShowSubjectForm: TShowSubjectForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Scaled = False
   DesignSize = (
     568
     305)

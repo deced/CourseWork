@@ -23,28 +23,26 @@ type
         procedure ConfirureImage();
         procedure ConfigurePopupMenu();
         procedure ConfigureTimeLabels(Parent: TWinControl);
+        procedure SetSubjectColor(Subject: TSubject);
+        procedure SetVisibility(Value: Boolean);
     end;
 
 implementation
 
-procedure TSubjectLabel.SetText(Subject: TSubject);
+procedure TSubjectLabel.SetVisibility(Value: Boolean);
 begin
-    SubjectName.Visible := true;
-    SubjectName.Visible := true;
-    Auditory.Visible := true;
-    TimeStart.Visible := true;
-    TimeEnd.Visible := true;
-    Tutor.Visible := true;
-    Group.Visible := true;
-    SubjectColor.Visible := true;
-    Bevel.Visible := true;
-    SubjectName.Caption := Subject.SubjectName + ' (' +
-      Subject.SubjectType + ')';
-    Auditory.Caption := Subject.Auditory;
-    TimeStart.Caption := Subject.StartTime;
-    TimeEnd.Caption := Subject.EndTime;
-    Tutor.Caption := Subject.Tutor.Fio;
-    Group.Caption := Subject.Group;
+    SubjectName.Visible := Value;
+    Auditory.Visible := Value;
+    TimeStart.Visible := Value;
+    TimeEnd.Visible := Value;
+    Tutor.Visible := Value;
+    Group.Visible := Value;
+    SubjectColor.Visible := Value;
+    Bevel.Visible := Value;
+end;
+
+procedure TSubjectLabel.SetSubjectColor(Subject: TSubject);
+begin
     if Subject.SubjectType = 'À ' then
         SubjectColor.Canvas.Brush.Color := 2930990
     else if Subject.SubjectType = 'œ«' then
@@ -53,28 +51,24 @@ begin
         SubjectColor.Canvas.Brush.Color := 1513124;
     SubjectColor.Canvas.FillRect(SubjectColor.Canvas.ClipRect);
     SubjectColor.Visible := true;
-    Bevel.Visible := true;
+end;
+
+procedure TSubjectLabel.SetText(Subject: TSubject);
+begin
+    SetVisibility(true);
+    SetSubjectColor(Subject);
+    SubjectName.Caption := Subject.SubjectName + ' (' +
+      Subject.SubjectType + ')';
+    Auditory.Caption := Subject.Auditory;
+    TimeStart.Caption := Subject.StartTime;
+    TimeEnd.Caption := Subject.EndTime;
+    Tutor.Caption := Subject.Tutor.Fio;
+    Group.Caption := Subject.Group;
 end;
 
 procedure TSubjectLabel.Clear();
 begin
-    SubjectName.Visible := false;
-    SubjectName.Visible := false;
-    Auditory.Visible := false;
-    TimeStart.Visible := false;
-    TimeEnd.Visible := false;
-    Tutor.Visible := false;
-    Group.Visible := false;
-    SubjectColor.Visible := false;
-    Bevel.Visible := false;
-    // SubjectName.Caption := '';
-    // Auditory.Caption := '';
-    // TimeStart.Caption := '';
-    // TimeEnd.Caption := '';
-    // Tutor.Caption := '';
-    // Group.Caption := '';
-    // SubjectColor.Visible := false;
-    // Bevel.Visible := false;
+    SetVisibility(false);
 end;
 
 procedure TSubjectLabel.SetLocation(Y: Integer);
@@ -166,6 +160,7 @@ begin
     TimeStart.Height := 62;
     TimeStart.Width := Parent.Width;
     TimeStart.PopUpMenu := PopUpMenu;
+    TimeStart.Cursor := crHandPoint;
 end;
 
 constructor TSubjectLabel.Create(Parent: TWinControl; Y: Integer);

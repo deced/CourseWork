@@ -12,6 +12,7 @@ object MainForm: TMainForm
   Font.Style = []
   Menu = MainMenu
   OldCreateOrder = False
+  Scaled = False
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -113,7 +114,6 @@ object MainForm: TMainForm
     BevelInner = bvNone
     BevelOuter = bvNone
     TabOrder = 5
-    OnClick = SchedulesScrollBoxClick
   end
   object MainMenu: TMainMenu
     Left = 744
