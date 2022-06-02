@@ -10,7 +10,7 @@ uses
     Parser, JsonFactory, CustomTypes, Vcl.ExtCtrls, PngImage,
     Schedule, Vcl.Imaging.jpeg, IdTCPClient, Generics.Collections, Day,
     Rest.Json, IO, Vcl.Menus, SubjectLabel, ShowSubject, Subject, DateUtils,
-    System.Types, ScheduleLabel, System.ImageList, Vcl.ImgList;
+    System.Types, ScheduleLabel, System.ImageList, Vcl.ImgList, ClassRooms;
 
 type
 
@@ -30,6 +30,7 @@ type
         NoSubjectsLabel: TLabel;
         SearchBox: TComboBox;
         IHATEDELPHIPOPUPS: TPopupMenu;
+    N3: TMenuItem;
         procedure FormCreate(Sender: TObject);
         procedure PrintDay(Day: TDay);
         procedure NextButtonClick(Sender: TObject);
@@ -53,6 +54,7 @@ type
         procedure AddScheduleButtonClick(Sender: TObject);
         procedure SetCurrentSchedule(Schedule: TSchedule);
         procedure OnScheduleDeleteClick(Sender: TObject);
+    procedure N3Click(Sender: TObject);
     private
         SubjectLabels: TList<TSubjectLabel>;
     public
@@ -326,6 +328,8 @@ begin
         SetCurrentSchedule(Schedules[ScheduleIndex]);
 end;
 
+
+
 procedure TMainForm.PrintSchedules();
 var
     I: Integer;
@@ -404,6 +408,14 @@ begin
     end;
 end;
 
+procedure TMainForm.N3Click(Sender: TObject);
+var
+    newForm: TClassRoomsForm;
+begin
+    newForm := TClassRoomsForm.Create(self);
+    newForm.Open(CurrentWeek,CurrentDay);
+end;
+
 procedure TMainForm.NextButtonClick(Sender: TObject);
 begin
     if CurrentSchedule <> nil then
@@ -421,6 +433,7 @@ begin
     DayIndex := CurrentDay;
     MainForm.PrintDateLabel();
     SaveWeekIndexToFile(CurrentWeek);
+    MainForm.N3.Enabled := true;
 end;
 
 procedure TMainForm.OnScheduleClick(Sender: TObject);
@@ -439,6 +452,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    CreateDir('groups');
     DaysOffset := 0;
     SubjectLabels := TList<TSubjectLabel>.Create;
     ScheduleLabels := TList<TScheduleLabel>.Create;

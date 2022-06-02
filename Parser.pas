@@ -46,13 +46,9 @@ var
     HttpClient: THttpClient;
     HttpResponse: IHttpResponse;
 begin
-    Result := LoadWeekIndexFromFile;
-    if Result = 255 then
-    begin
-        HttpClient := THttpClient.Create;
-        HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
-        Result := StrToInt(HttpResponse.ContentAsString());
-    end;
+    HttpClient := THttpClient.Create;
+    HttpResponse := HttpClient.Get('http://journal.bsuir.by/api/v1/week');
+    Result := StrToInt(HttpResponse.ContentAsString());
 end;
 
 function MyTParser.GetTutors(): TTutorsList;

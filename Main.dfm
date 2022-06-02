@@ -171,6 +171,11 @@ object MainForm: TMainForm
   end
   object MainMenu: TMainMenu
     Left = 368
+    object N3: TMenuItem
+      Caption = #1056#1072#1089#1087#1080#1089#1072#1085#1080#1077' '#1072#1091#1076#1080#1090#1086#1088#1080#1081
+      Enabled = False
+      OnClick = N3Click
+    end
     object N1: TMenuItem
       Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
     end

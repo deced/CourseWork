@@ -2,8 +2,8 @@ object ShowSubjectForm: TShowSubjectForm
   Left = 0
   Top = 0
   Caption = #1055#1088#1086#1089#1084#1086#1090#1088' '#1087#1072#1088#1099
-  ClientHeight = 372
-  ClientWidth = 732
+  ClientHeight = 378
+  ClientWidth = 797
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,8 +13,8 @@ object ShowSubjectForm: TShowSubjectForm
   OldCreateOrder = False
   Scaled = False
   DesignSize = (
-    732
-    372)
+    797
+    378)
   PixelsPerInch = 96
   TextHeight = 13
   object Image1: TImage
@@ -27,8 +27,8 @@ object ShowSubjectForm: TShowSubjectForm
   object TutorLabel: TLabel
     Left = 8
     Top = 314
-    Width = 300
-    Height = 117
+    Width = 494
+    Height = 56
     Anchors = [akLeft, akTop, akBottom]
     Caption = #1044#1072#1085#1080#1083#1086#1074#1072' '#1043#1072#1083#1080#1085#1072' '#1042#1083#1072#1076#1080#1084#1080#1088#1086#1074#1085#1072
     Font.Charset = DEFAULT_CHARSET
@@ -38,11 +38,11 @@ object ShowSubjectForm: TShowSubjectForm
     Font.Style = []
     ParentFont = False
     WordWrap = True
-    ExplicitHeight = 167
+    ExplicitHeight = 73
   end
   object Label1: TLabel
-    Left = 336
-    Top = 9
+    Left = 368
+    Top = 8
     Width = 227
     Height = 25
     Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1076#1080#1089#1087#1080#1087#1083#1080#1085#1099':'
@@ -54,7 +54,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 336
+    Left = 368
     Top = 49
     Width = 127
     Height = 25
@@ -67,7 +67,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label3: TLabel
-    Left = 336
+    Left = 368
     Top = 89
     Width = 134
     Height = 25
@@ -80,7 +80,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label4: TLabel
-    Left = 336
+    Left = 368
     Top = 129
     Width = 123
     Height = 25
@@ -93,7 +93,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label5: TLabel
-    Left = 336
+    Left = 368
     Top = 169
     Width = 75
     Height = 25
@@ -106,7 +106,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label6: TLabel
-    Left = 336
+    Left = 368
     Top = 209
     Width = 110
     Height = 25
@@ -119,7 +119,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label7: TLabel
-    Left = 336
+    Left = 368
     Top = 249
     Width = 84
     Height = 25
@@ -132,7 +132,7 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object Label8: TLabel
-    Left = 336
+    Left = 368
     Top = 289
     Width = 110
     Height = 25
@@ -145,10 +145,11 @@ object ShowSubjectForm: TShowSubjectForm
     ParentFont = False
   end
   object SubjectNameEdit: TEdit
-    Left = 569
+    Left = 608
     Top = 7
-    Width = 152
+    Width = 178
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -159,10 +160,11 @@ object ShowSubjectForm: TShowSubjectForm
     TabOrder = 0
   end
   object StartTimeEdit: TEdit
-    Left = 476
-    Top = 89
-    Width = 245
+    Left = 519
+    Top = 86
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -173,10 +175,11 @@ object ShowSubjectForm: TShowSubjectForm
     TabOrder = 1
   end
   object EndTimeEdit: TEdit
-    Left = 476
-    Top = 129
-    Width = 245
+    Left = 519
+    Top = 126
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -187,10 +190,11 @@ object ShowSubjectForm: TShowSubjectForm
     TabOrder = 2
   end
   object GroupEdit: TEdit
-    Left = 476
-    Top = 169
-    Width = 245
+    Left = 519
+    Top = 166
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -201,10 +205,11 @@ object ShowSubjectForm: TShowSubjectForm
     TabOrder = 3
   end
   object SubjectTypeComboBox: TComboBox
-    Left = 476
-    Top = 49
-    Width = 245
+    Left = 519
+    Top = 46
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -21
@@ -218,10 +223,11 @@ object ShowSubjectForm: TShowSubjectForm
       #1051#1056)
   end
   object AuditoryEdit: TEdit
-    Left = 476
-    Top = 209
-    Width = 245
+    Left = 519
+    Top = 206
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -232,10 +238,10 @@ object ShowSubjectForm: TShowSubjectForm
     TabOrder = 5
   end
   object SaveButton: TButton
-    Left = 336
-    Top = 328
-    Width = 169
-    Height = 36
+    Left = 519
+    Top = 326
+    Width = 127
+    Height = 40
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -248,10 +254,10 @@ object ShowSubjectForm: TShowSubjectForm
     OnClick = SaveButtonClick
   end
   object CancelButton: TButton
-    Left = 556
+    Left = 680
     Top = 329
-    Width = 168
-    Height = 36
+    Width = 109
+    Height = 40
     Caption = #1054#1090#1084#1077#1085#1072
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -264,10 +270,11 @@ object ShowSubjectForm: TShowSubjectForm
     OnClick = CancelButtonClick
   end
   object NoteEdit: TEdit
-    Left = 476
-    Top = 250
-    Width = 245
+    Left = 519
+    Top = 247
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -278,10 +285,11 @@ object ShowSubjectForm: TShowSubjectForm
     TabOrder = 8
   end
   object SubGroupEdit: TEdit
-    Left = 476
-    Top = 290
-    Width = 245
+    Left = 519
+    Top = 287
+    Width = 270
     Height = 33
+    Anchors = [akLeft, akTop, akRight]
     Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

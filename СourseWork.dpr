@@ -17,7 +17,11 @@ uses
   ShowSubject in 'ShowSubject.pas' {ShowSubjectForm},
   SubjectLabel in 'SubjectLabel.pas',
   ImageParser in 'ImageParser.pas',
-  ScheduleLabel in 'ScheduleLabel.pas';
+  ScheduleLabel in 'ScheduleLabel.pas',
+  ClassRooms in 'ClassRooms.pas' {ClassRoomsForm},
+  ClassRoom in 'ClassRoom.pas',
+  ClassRoomsParser in 'ClassRoomsParser.pas',
+  AuditorySubject in 'AuditorySubject.pas';
 
 {$R *.res}
 
@@ -26,6 +30,7 @@ begin
     Application.MainFormOnTaskbar := True;
     Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TShowSubjectForm, ShowSubjectForm);
+  Application.CreateForm(TClassRoomsForm, ClassRoomsForm);
   Application.Run;
 
 end.

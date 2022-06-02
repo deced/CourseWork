@@ -4,6 +4,8 @@ interface
 
 uses Generics.Collections, Schedule, Rest.Json, SysUtils, System.Classes,
     DateUtils, CustomTypes;
+procedure SaveAllSchedules(Schedules: TList<TSchedule>);
+function LoadAllSchedules(): TList<TSchedule>;
 procedure SaveGroups(Groups: TGroupsList);
 procedure SaveTutors(Tutors: TTutorsList);
 function LoadGroups(): TGroupsList;
@@ -105,14 +107,14 @@ var
     Input: string;
 begin
     Result := TGroupsList.Create;
-    if FileExists('Groups.dat') then
-    begin
-        AssignFile(InputFile, 'Groups.dat');
-        Reset(InputFile);
-        Readln(InputFile, Input);
-        Result := TJson.JsonToObject<TGroupsList>(Input);
-        CloseFile(InputFile);
-    end;
+    { if FileExists('Groups.dat') then
+      begin
+      AssignFile(InputFile, 'Groups.dat');
+      Reset(InputFile);
+      Readln(InputFile, Input);
+      Result := TJson.JsonToObject<TGroupsList>(Input);
+      CloseFile(InputFile);
+      end; }
 
 end;
 
@@ -152,6 +154,33 @@ begin
     Rewrite(OutputFile);
     Writeln(OutputFile, TJson.ObjectToJsonString(Tutors));
     CloseFile(OutputFile);
+end;
+
+procedure SaveAllSchedules(Schedules: TList<TSchedule>);
+var
+    OutputFile: TextFile;
+    Schedule: TSchedule;
+begin
+    AssignFile(OutputFile, 'all_schedules.dat');
+    Rewrite(OutputFile);
+    Write(OutputFile, TJson.ObjectToJsonString(Schedules));
+    CloseFile(OutputFile);
+end;
+
+function LoadAllSchedules(): TList<TSchedule>;
+var
+    InputFile: TextFile;
+    Json: String;
+begin
+    Result := TList<TSchedule>.Create;
+    if FileExists('all_schedules.dat') then
+    begin
+        AssignFile(InputFile, 'all_schedules.dat');
+        Reset(InputFile);
+        Read(InputFile, Json);
+        Result := TJson.JsonToObject < TList < TSchedule >> (Json);
+        CloseFile(InputFile);
+    end;
 end;
 
 procedure SaveShedules(Schedules: TList<TSchedule>);
